@@ -1,7 +1,11 @@
+package appointment;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public class Appointment {
+import type.TreatmentType;
+
+public class AppointmentEntry {
+    private int id;
     private LocalDate date;
     private LocalTime startTime;
     private LocalTime endTime;

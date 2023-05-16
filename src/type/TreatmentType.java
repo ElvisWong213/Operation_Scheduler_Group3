@@ -1,3 +1,4 @@
+package type;
 public enum TreatmentType {
     Operation,
     Consultation,
