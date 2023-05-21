@@ -3,18 +3,17 @@ package user;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import database.DatabaseInterface;
+import database.Database;
+import type.Profession;
 
 public class Professional extends User {
     private int professionalID;
-    private String name;
-    private String profession;
+    private Profession profession;
     private String workLocation;
 
     public Professional() {
         super();
         this.professionalID = 0;
-        this.name = null;
         this.profession = null;
         this.workLocation = null;
     }
@@ -27,11 +26,7 @@ public class Professional extends User {
         this.professionalID = professionalID;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setProfession(String profession) {
+    public void setProfession(Profession profession) {
         this.profession = profession;
     }
 
@@ -39,15 +34,7 @@ public class Professional extends User {
         this.workLocation = workLocation;
     }
 
-    public int getUserID() {
-        return userID;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getProfession() {
+    public Profession getProfession() {
         return profession;
     }
 
@@ -58,22 +45,48 @@ public class Professional extends User {
     @Override
     public boolean performLogin(String email, String password) {
         try {
-            retrieveData(email, password);
-            DatabaseInterface db = new DatabaseInterface();
+            getUserByEmailPassword(email, password);
             String query = String.format("SELECT * FROM professional WHERE user_id = %2d;", userID);
-            ResultSet rs = db.executeQuery(query);
-            if (rs.next()) {
-                professionalID = rs.getInt("professional_id");
-                name = rs.getString("name");
-                profession = rs.getString("profession");
-                workLocation = rs.getString("work_location");
-                isLogin = true;
-                db.close();
-                return true;
-            }
+            getDataFromDatabase(query);
         } catch (SQLException e) {
             return false;
         }
-        return false;
+        return getLoginState();
     }
+
+    @Override
+    public void getUserById(int id) throws SQLException {
+        String query = String.format("SELECT * FROM professional WHERE professional_id = %2d;", id);
+        getDataFromDatabase(query);
+        super.getUserById(userID);
+    }
+    
+
+    private void getDataFromDatabase(String query) throws SQLException {
+        Database db = new Database();
+        ResultSet rs = db.executeQuery(query);
+        if (rs.next()) {
+            this.userID = rs.getInt("user_id");
+            this.professionalID = rs.getInt("professional_id");
+            this.profession = Profession.valueOf(rs.getString("profession"));
+            this.workLocation = rs.getString("work_location");
+        }
+        rs.close();
+        db.close();
+    }
+
+    @Override
+    public void clear() {
+        super.clear();
+        this.professionalID = 0;
+        this.profession = null;
+        this.workLocation = null;
+    }
+
+    @Override
+    public boolean getLoginState() {
+        return professionalID != 0;
+    }
+    
+    
 }

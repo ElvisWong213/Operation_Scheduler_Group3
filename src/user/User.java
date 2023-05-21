@@ -3,19 +3,27 @@ package user;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import database.DatabaseInterface;
+import database.Database;
 
-abstract class User {
+public abstract class User {
     protected int userID;
+    protected String name;
     protected String email;
     protected String password;
-    protected boolean isLogin;
 
     protected User() {
         this.userID = 0;
+        this.name = null;
         this.email = null;
         this.password = null;
-        this.isLogin = false;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getUserID() {
@@ -42,30 +50,38 @@ abstract class User {
         this.password = password;
     }
 
-    public boolean isLogin() {
-        return isLogin;
-    }
-
-    public void setLogin(boolean isLogin) {
-        this.isLogin = isLogin;
-    }
+    public abstract boolean getLoginState();
 
     public abstract boolean performLogin(String email, String password);
 
-    protected void retrieveData(String email, String password) throws SQLException {
-        DatabaseInterface db = new DatabaseInterface();
+    protected void getUserByEmailPassword(String email, String password) throws SQLException {
         String query = String.format("SELECT * FROM user WHERE email = '%s' AND password = '%s';", email, password);
+        getDataFromDatabase(query);
+    }
+
+    public void getUserById(int id) throws SQLException {
+        String query = String.format("SELECT * FROM user WHERE user_id = %2d;", id);
+        getDataFromDatabase(query);
+    }
+
+    private void getDataFromDatabase(String query) throws SQLException {
+        Database db = new Database();
         ResultSet rs = db.executeQuery(query);
         if (rs.next()) {
             this.userID = rs.getInt("user_id");
+            this.name = rs.getString("name");
             this.email = rs.getString("email");
             this.password = rs.getString("password");
         }
+        rs.close();
         db.close();
     }
 
-    public boolean getLoginState() {
-        return isLogin;
+    public void clear() {
+        this.userID = 0;
+        this.name = null;
+        this.email = null;
+        this.password = null;
     }
 
 }

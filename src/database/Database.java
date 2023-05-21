@@ -5,13 +5,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class DatabaseInterface {
+public class Database {
     private static String url = "jdbc:mysql://localhost:3306/operation_scheduler";
     private static String user = "javaDB";
     private static String password = "P@ssw0rd";
     private Connection connection;
 
-    public DatabaseInterface() throws SQLException {
+    public Database() throws SQLException {
         this.connection = DriverManager.getConnection(url, user, password);
     }
 

@@ -3,12 +3,11 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import database.DatabaseInterface;
+import database.Database;
 import type.Gender;
 
 public class Patient extends User {
     private int patientID;
-    private String name;
     private Gender gender;
     private Date dateOfBirth;
     private String phoneNumber;
@@ -18,7 +17,6 @@ public class Patient extends User {
     public Patient() {
         super();
         this.patientID = 0;
-        this.name = null;
         this.gender = null;
         this.dateOfBirth = null;
         this.phoneNumber = null;
@@ -31,14 +29,6 @@ public class Patient extends User {
 
     public void setPatientID(int patientID) {
         this.patientID = patientID;
-    }
-    
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public Gender getGender() {
@@ -76,25 +66,50 @@ public class Patient extends User {
     @Override
     public boolean performLogin(String email, String password) {
         try {
-            retrieveData(email, password);
-            DatabaseInterface db = new DatabaseInterface();
+            getUserByEmailPassword(email, password);
             String query = String.format("SELECT * FROM patient WHERE user_id = %2d;", userID);
-            ResultSet patientRs = db.executeQuery(query);
-            if (patientRs.next()) {
-                patientID = patientRs.getInt("patient_id");
-                name = patientRs.getString("name");
-                gender = Gender.valueOf(patientRs.getString("gender"));
-                dateOfBirth = patientRs.getDate("date_of_birth");
-                phoneNumber = patientRs.getString("phone_number");
-                address = patientRs.getString("address");
-                isLogin = true;
-                db.close();
-                return true;
-            }
+            getDataFromDatabase(query);
         } catch (SQLException e) {
             return false;
         }
-        return false;
+        return getLoginState();
     }
 
+    @Override
+    public void getUserById(int id) throws SQLException {
+        String query = String.format("SELECT * FROM patient WHERE patient_id = %d;", id);
+        getDataFromDatabase(query);
+        super.getUserById(userID);
+    }
+
+    private void getDataFromDatabase(String query) throws SQLException {
+        Database db = new Database();
+        ResultSet rs = db.executeQuery(query);
+        if (rs.next()) {
+            userID = rs.getInt("user_id");
+            patientID = rs.getInt("patient_id");
+            gender = Gender.valueOf(rs.getString("gender"));
+            dateOfBirth = rs.getDate("date_of_birth");
+            phoneNumber = rs.getString("phone_number");
+            address = rs.getString("address");
+        }
+        rs.close();
+        db.close();
+    }
+
+    @Override
+    public void clear() {
+        super.clear();
+        this.patientID = 0;
+        this.gender = null;
+        this.dateOfBirth = null;
+        this.phoneNumber = null;
+        this.address = null;
+    }
+
+    @Override
+    public boolean getLoginState() {
+        return patientID != 0;
+    }
+    
 }

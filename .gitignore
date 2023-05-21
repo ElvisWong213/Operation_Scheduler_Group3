@@ -21,6 +21,8 @@ bin/
 /dist/
 /nbdist/
 /.nb-gradle/
+Operation_Scheduler_Group3.iml
+.idea/
 
 ### VS Code ###
 .vscode/
