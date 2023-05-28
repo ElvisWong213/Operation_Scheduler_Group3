@@ -1,23 +1,23 @@
 package appointment;
 import java.sql.*;
 import java.time.*;
-import java.util.ArrayList;
 
+import dataStructure.MyLinkedList;
 import database.Database;
 import type.TreatmentType;
 
 public class Appointment {
-    private ArrayList<AppointmentEntry> appointments;
+    private MyLinkedList<AppointmentEntry> appointments;
 
     public Appointment() {
-        this.appointments = new ArrayList<>();
+        this.appointments = new MyLinkedList<>();
     }
 
-    public ArrayList<AppointmentEntry> getAppointments() {
+    public MyLinkedList<AppointmentEntry> getAppointments() {
         return appointments;
     }
 
-    public void setAppointments(ArrayList<AppointmentEntry> appointments) {
+    public void setAppointments(MyLinkedList<AppointmentEntry> appointments) {
         this.appointments = appointments;
     }
 
@@ -91,11 +91,6 @@ public class Appointment {
             System.out.println("Fail to book an appointment");
         }
     }
-
-    public void undoLastAction() {
-
-    }
-
 
     public void printAllAppointments() {
         if (appointments.isEmpty()) {

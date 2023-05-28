@@ -1,4 +1,5 @@
 package user;
+
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,19 +9,29 @@ import type.Gender;
 
 public class Patient extends User {
     private int patientID;
+    private String name;
     private Gender gender;
     private Date dateOfBirth;
     private String phoneNumber;
     private String address;
-    
 
     public Patient() {
         super();
         this.patientID = 0;
+        this.name = null;
         this.gender = null;
         this.dateOfBirth = null;
         this.phoneNumber = null;
         this.address = null;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getPatientID() {
@@ -88,6 +99,7 @@ public class Patient extends User {
         if (rs.next()) {
             userID = rs.getInt("user_id");
             patientID = rs.getInt("patient_id");
+            name = rs.getString("name");
             gender = Gender.valueOf(rs.getString("gender"));
             dateOfBirth = rs.getDate("date_of_birth");
             phoneNumber = rs.getString("phone_number");
@@ -101,6 +113,7 @@ public class Patient extends User {
     public void clear() {
         super.clear();
         this.patientID = 0;
+        this.name = null;
         this.gender = null;
         this.dateOfBirth = null;
         this.phoneNumber = null;
@@ -111,5 +124,5 @@ public class Patient extends User {
     public boolean getLoginState() {
         return patientID != 0;
     }
-    
+
 }

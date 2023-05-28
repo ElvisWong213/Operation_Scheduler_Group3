@@ -7,23 +7,13 @@ import database.Database;
 
 public abstract class User {
     protected int userID;
-    protected String name;
     protected String email;
     protected String password;
 
     protected User() {
         this.userID = 0;
-        this.name = null;
         this.email = null;
         this.password = null;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public int getUserID() {
@@ -50,6 +40,8 @@ public abstract class User {
         this.password = password;
     }
 
+    public abstract String getName();
+
     public abstract boolean getLoginState();
 
     public abstract boolean performLogin(String email, String password);
@@ -69,7 +61,6 @@ public abstract class User {
         ResultSet rs = db.executeQuery(query);
         if (rs.next()) {
             this.userID = rs.getInt("user_id");
-            this.name = rs.getString("name");
             this.email = rs.getString("email");
             this.password = rs.getString("password");
         }
@@ -79,7 +70,6 @@ public abstract class User {
 
     public void clear() {
         this.userID = 0;
-        this.name = null;
         this.email = null;
         this.password = null;
     }

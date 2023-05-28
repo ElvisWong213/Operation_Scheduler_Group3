@@ -1,22 +1,14 @@
 package menu;
-import java.sql.Date;
-import java.sql.SQLException;
-import java.sql.Time;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.sql.*;
+import java.time.*;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.Set;
-import java.util.TreeSet;
 
-import appointment.Appointment;
-import appointment.AppointmentEntry;
+import appointment.*;
+import dataStructure.MyLinkedList;
+import dataStructure.MySet;
 import type.TreatmentType;
-import user.Patient;
-import user.Professional;
-import user.UserManager;
-import user.User;
+import user.*;
 
 public class Menu {
     private static Scanner scanner = new Scanner(System.in);
@@ -87,7 +79,7 @@ public class Menu {
             System.out.println("3. Edit appointment");
             System.out.println("4. Cancel appointment");
             System.out.println("5. Search patient");
-            System.out.println("Q: logout");
+            System.out.println("Q: Logout");
     
             String choose = scanner.nextLine();
             switch (choose) {
@@ -115,7 +107,6 @@ public class Menu {
                 default:
                 break;
             }
-
         }
     }
 
@@ -152,8 +143,8 @@ public class Menu {
     }
 
     private void bookAppointment() {
-        ArrayList<Professional> professionals = UserManager.getAllProfessionals();
-        ArrayList<Patient> patients = UserManager.getAllPatients();
+        MyLinkedList<Professional> professionals = UserManager.getAllProfessionals();
+        MyLinkedList<Patient> patients = UserManager.getAllPatients();
 
         while (true) {
             // * Get treatment type
@@ -223,7 +214,7 @@ public class Menu {
         }
     }
 
-    private int chooseUser(ArrayList<? extends User> users) {
+    private int chooseUser(MyLinkedList<? extends User> users) {
         String userType = "";
         if (users.get(0) instanceof Professional) {
             userType = "professional";
@@ -249,7 +240,7 @@ public class Menu {
                 continue;
             }
             if (users.get(0) instanceof Professional) {
-                Professional user = (Professional) users.get(choose - 1);
+                Professional user = (Professional) users.get(choose);
                 return user.getProfessionalID();
             } else {
                 Patient user = (Patient) users.get(choose);
@@ -281,15 +272,15 @@ public class Menu {
     }
 
     private LocalTime chooseTime(LocalDate date, User user1, User user2) {
-        Set<LocalTime> user1AvailableTime = UserManager.availableTime(date, user1);
-        Set<LocalTime> user2AvailableTime = UserManager.availableTime(date, user2);
-        Set<LocalTime> availableTime = new TreeSet<>(user1AvailableTime);
-        availableTime.retainAll(user2AvailableTime);
-        ArrayList<LocalTime> availableTimeArray = new ArrayList<>(availableTime);
+        MySet<LocalTime> user1AvailableTime = UserManager.availableTime(date, user1);
+        MySet<LocalTime> user2AvailableTime = UserManager.availableTime(date, user2);
+        MySet<LocalTime> availableTime = new MySet<>(user1AvailableTime);
+        availableTime.intersection(user2AvailableTime);
+        LocalTime[] availableTimeArray = availableTime.toArray(new LocalTime[availableTime.size()]);
         
         while (true) {
             for (int i = 0; i < availableTime.size(); i++) {
-                System.out.println(i + 1 + ". " + availableTimeArray.get(i) + " - " + availableTimeArray.get(i).plusHours(1));
+                System.out.println(i + 1 + ". " + availableTimeArray[i] + " - " + availableTimeArray[i].plusHours(1));
             }
             int choose = 0;
             try {
@@ -302,7 +293,7 @@ public class Menu {
             if (choose < 0 || choose > availableTime.size() - 1) {
                 continue;
             }
-            return availableTimeArray.get(choose);
+            return availableTimeArray[choose];
         }
     }
 
@@ -351,7 +342,7 @@ public class Menu {
     }
 
     private void editElementInAppointment(AppointmentEntry ae) {
-        ArrayList<Professional> professionals = UserManager.getAllProfessionals();
+        MyLinkedList<Professional> professionals = UserManager.getAllProfessionals();
 
         while (true) {
             ae.print();
@@ -440,10 +431,43 @@ public class Menu {
         System.out.println("");
         System.out.println("---------------------------------------------------");
         System.out.println("Patient");
-        System.out.println("User info:");
         System.out.println("Name: " + patient.getName());
         System.out.println("---------------------------------------------------");
-        System.out.println("1. View appointment");
+        while (true) {
+            System.out.println("");
+            System.out.println("1. View appointment");
+            System.out.println("2. Book appointment");
+            System.out.println("3. Edit appointment");
+            System.out.println("4. Cancel appointment");
+            System.out.println("Q: Logout");
+    
+            String choose = scanner.nextLine();
+            switch (choose) {
+                case "1":
+                while (true) {
+                    String myChoose = viewAppointment();
+                    if (myChoose.equals("q") || myChoose.equals("Q")) {
+                        break;
+                    }
+                }
+                break;
+                case "2":
+                bookAppointment();
+                break;
+                case "3":
+                editAppointment();
+                break;
+                case "4":
+                cancelAppointment();
+                break;
+                case "Q":
+                case "q":
+                clear();
+                return;
+                default:
+                break;
+            }
+        }
 
     }
 }

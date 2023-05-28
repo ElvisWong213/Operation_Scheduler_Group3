@@ -1,19 +1,14 @@
 package user;
 
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.TreeSet;
+import java.sql.*;
+import java.time.*;
 
+import dataStructure.*;
 import database.Database;
 
 public class UserManager {
-    public static ArrayList<Professional> getAllProfessionals() {
-        ArrayList<Professional> professionals = new ArrayList<>();
+    public static MyLinkedList<Professional> getAllProfessionals() {
+        MyLinkedList<Professional> professionals = new MyLinkedList<>();
         try {
             Database db = new Database();
             String query = "SELECT professional_id FROM professional";
@@ -29,8 +24,8 @@ public class UserManager {
         return professionals;
     }
 
-    public static ArrayList<Patient> getAllPatients() {
-        ArrayList<Patient> patients = new ArrayList<>();
+    public static MyLinkedList<Patient> getAllPatients() {
+        MyLinkedList<Patient> patients = new MyLinkedList<>();
         try {
             Database db = new Database();
             String query = "SELECT patient_id FROM patient";
@@ -46,9 +41,9 @@ public class UserManager {
         return patients;
     }
 
-    public static Set<LocalTime> availableTime(LocalDate date, User user) {
+    public static MySet<LocalTime> availableTime(LocalDate date, User user) {
         Date dbDate = Date.valueOf(date);
-        Set<LocalTime> times = new TreeSet<>();
+        MySet<LocalTime> times = new MySet<>();
         for (int i = 9; i < 17; i++) {
             times.add(LocalTime.of(i, 0, 0));
         }
