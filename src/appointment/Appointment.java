@@ -59,6 +59,7 @@ public class Appointment {
             Database db = new Database();
             String query = String.format("INSERT INTO appointment (date, start_time, end_time, treatment_type, professional_id, patient_id) VALUES ('%s', '%s', '%s', '%s', %d, %d)", dbDate, dbStarTime, dbEndTime, treatmentType, professionalID, patientID);
             db.executeUpdate(query);
+            db.close();
         } catch (SQLException e) {
             System.out.println("Fail to book an appointment");
         }
@@ -76,6 +77,7 @@ public class Appointment {
             Database db = new Database();
             String query = String.format("UPDATE appointment SET date = '%s', start_time = '%s', end_time = '%s', treatment_type = '%s', professional_id = %d, patient_id = %d WHERE appointment_id = %d;", dbDate, dbStarTime, dbEndTime, treatmentType, professionalID, patientID, appointmentID);
             db.executeUpdate(query);
+            db.close();
         } catch (SQLException e) {
             System.out.println("Fail to book an appointment");
         }
@@ -87,6 +89,7 @@ public class Appointment {
             Database db = new Database();
             String query = String.format("DELETE FROM appointment WHERE appointment_id = %d;", appointmentID);
             db.executeUpdate(query);
+            db.close();
         } catch (SQLException e) {
             System.out.println("Fail to book an appointment");
         }

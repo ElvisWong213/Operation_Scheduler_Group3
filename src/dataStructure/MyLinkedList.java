@@ -243,9 +243,11 @@ public class MyLinkedList<T> implements Iterable<T> {
             removeFirst();
         } else if (index == this.size - 1) {
             removeLast();
-        } else {
+        } else if (index > 0 && index < this.size - 1) {
             previousNode.next = currentNode.next;
             this.size--;
+        } else {
+            index = -1;
         }
         return index;
     }

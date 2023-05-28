@@ -277,4 +277,9 @@ public class BinaryTree<T extends Comparable<T>> {
     public int size() {
         return this.size;
     }
+
+    public void clear() {
+        this.root = null;
+        this.size = 0;
+    }
 }
