@@ -74,7 +74,7 @@ CREATE TABLE diary (
     note MEDIUMTEXT,
     professional_id INT,
     patient_id INT
-)
+);
 
 ALTER TABLE diary
 ADD CONSTRAINT fk_diary_professional_id
@@ -82,7 +82,7 @@ FOREIGN KEY (professional_id) REFERENCES professional(professional_id);
 
 ALTER TABLE diary
 ADD CONSTRAINT fk_diary_patient_id
-FOREIGN KEY (patient_id) REFERENCES professional(patient_id);
+FOREIGN KEY (patient_id) REFERENCES patient(patient_id);
 
 INSERT INTO diary (date, time, note, professional_id, patient_id)
 VALUES ('2023-05-30', '12:00:00', 'testing diary', 1, 1);
