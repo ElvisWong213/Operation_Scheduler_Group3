@@ -1,39 +1,40 @@
 package appointment;
 import java.sql.*;
 import java.time.*;
-import java.util.ArrayList;
 
+import dataStructure.MyLinkedList;
 import database.Database;
 import type.TreatmentType;
 
 public class Appointment {
-    private ArrayList<AppointmentEntry> appointments;
+    private MyLinkedList<AppointmentEntry> appointments;
 
     public Appointment() {
-        this.appointments = new ArrayList<>();
+        this.appointments = new MyLinkedList<>();
     }
 
-    public ArrayList<AppointmentEntry> getAppointments() {
+    public MyLinkedList<AppointmentEntry> getAppointments() {
         return appointments;
     }
 
-    public void setAppointments(ArrayList<AppointmentEntry> appointments) {
+    public void setAppointments(MyLinkedList<AppointmentEntry> appointments) {
         this.appointments = appointments;
     }
 
     public void searchAppointmentsInWeek(LocalDate inputDate, int professionalID, int patientID) {
         appointments.clear();
+        Database db = null;
         try {
             Date startDate = Date.valueOf(inputDate);
             Date endDate = Date.valueOf(inputDate.plusDays(7));
-            Database db = new Database();
+            db = new Database();
             String query = String.format("SELECT * FROM appointment WHERE (professional_id = %d OR patient_id = %d) AND date >= '%s' AND date <= '%s' ORDER BY date ASC, start_time ASC;", professionalID, patientID, startDate, endDate);
             ResultSet rs = db.executeQuery(query);
             while (rs.next()) {
                 int id = rs.getInt("appointment_id");
-                Date date = rs.getDate("date");
-                Time startTime = rs.getTime("start_time");
-                Time endTime = rs.getTime("end_time");
+                Date date = Date.valueOf(rs.getString("date"));
+                Time startTime = Time.valueOf(rs.getString("start_time"));
+                Time endTime = Time.valueOf(rs.getString("end_time"));
                 TreatmentType treatmentType = TreatmentType.valueOf(rs.getString("treatment_type"));
                 int proID = rs.getInt("professional_id");
                 int patID = rs.getInt("patient_id");
@@ -41,10 +42,18 @@ public class Appointment {
                 AppointmentEntry appointmentEntry = new AppointmentEntry(id, date, startTime, endTime, treatmentType, proID, patID);
                 appointments.add(appointmentEntry);
             }
-            db.close();
         } catch (SQLException e) {
             System.out.println("Fail connect to database");
             e.printStackTrace();
+        } finally {
+            if (db != null) {
+                try {
+                    db.close();
+                } catch (SQLException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -91,11 +100,6 @@ public class Appointment {
             System.out.println("Fail to book an appointment");
         }
     }
-
-    public void undoLastAction() {
-
-    }
-
 
     public void printAllAppointments() {
         if (appointments.isEmpty()) {

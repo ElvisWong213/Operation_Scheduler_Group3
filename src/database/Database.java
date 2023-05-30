@@ -6,23 +6,34 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class Database {
-    private static String url = "jdbc:mysql://localhost:3306/operation_scheduler";
-    private static String user = "javaDB";
-    private static String password = "P@ssw0rd";
+    private final String url = "jdbc:sqlite:src/database/operation_scheduler.db";
     private Connection connection;
 
     public Database() throws SQLException {
-        this.connection = DriverManager.getConnection(url, user, password);
+        this.connection = DriverManager.getConnection(url);
+        this.connection.setAutoCommit(false);
     }
 
     public ResultSet executeQuery(String query) throws SQLException {
         Statement stmt = connection.createStatement();
-        return stmt.executeQuery(query);
+        ResultSet resultSet = stmt.executeQuery(query);
+        return resultSet;
     }
 
     public int executeUpdate(String query) throws SQLException {
-        Statement stmt = connection.createStatement();
-        return stmt.executeUpdate(query);
+        Statement stmt;
+        int updateRow = 0;
+        try {
+            stmt = connection.createStatement();
+            updateRow = stmt.executeUpdate(query);
+            connection.commit();
+        } catch (SQLException e) {
+            connection.rollback();
+            throw e;
+        } finally {
+            connection.close();
+        }
+        return updateRow;
     }
 
     public void close() throws SQLException {

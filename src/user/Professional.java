@@ -8,14 +8,25 @@ import type.Profession;
 
 public class Professional extends User {
     private int professionalID;
+    private String name;
     private Profession profession;
     private String workLocation;
 
     public Professional() {
         super();
         this.professionalID = 0;
+        this.name = null;
         this.profession = null;
         this.workLocation = null;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getProfessionalID() {
@@ -60,7 +71,6 @@ public class Professional extends User {
         getDataFromDatabase(query);
         super.getUserById(userID);
     }
-    
 
     private void getDataFromDatabase(String query) throws SQLException {
         Database db = new Database();
@@ -68,6 +78,7 @@ public class Professional extends User {
         if (rs.next()) {
             this.userID = rs.getInt("user_id");
             this.professionalID = rs.getInt("professional_id");
+            this.name = rs.getString("name");
             this.profession = Profession.valueOf(rs.getString("profession"));
             this.workLocation = rs.getString("work_location");
         }
@@ -79,6 +90,7 @@ public class Professional extends User {
     public void clear() {
         super.clear();
         this.professionalID = 0;
+        this.name = null;
         this.profession = null;
         this.workLocation = null;
     }
@@ -87,6 +99,5 @@ public class Professional extends User {
     public boolean getLoginState() {
         return professionalID != 0;
     }
-    
-    
+
 }
