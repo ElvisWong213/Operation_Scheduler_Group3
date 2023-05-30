@@ -1,7 +1,7 @@
 package appointment;
-import java.sql.Date;
+
+import java.sql.*;
 import java.sql.SQLException;
-import java.sql.Time;
 
 import type.TreatmentType;
 import user.Patient;

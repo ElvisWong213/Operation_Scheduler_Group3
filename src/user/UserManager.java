@@ -9,8 +9,9 @@ import database.Database;
 public class UserManager {
     public static MyLinkedList<Professional> getAllProfessionals() {
         MyLinkedList<Professional> professionals = new MyLinkedList<>();
+        Database db = null;
         try {
-            Database db = new Database();
+            db = new Database();
             String query = "SELECT professional_id FROM professional";
             ResultSet rs = db.executeQuery(query);
             while (rs.next()) {
@@ -20,14 +21,25 @@ public class UserManager {
             }
         } catch (SQLException e) {
             // TODO: handle exception
+            e.printStackTrace();
+        } finally {
+            if (db != null) {
+                try {
+                    db.close();
+                } catch (SQLException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
         }
         return professionals;
     }
 
     public static MyLinkedList<Patient> getAllPatients() {
         MyLinkedList<Patient> patients = new MyLinkedList<>();
+        Database db = null;
         try {
-            Database db = new Database();
+            db = new Database();
             String query = "SELECT patient_id FROM patient";
             ResultSet rs = db.executeQuery(query);
             while (rs.next()) {
@@ -36,7 +48,16 @@ public class UserManager {
                 patients.add(patient);
             }
         } catch (SQLException e) {
-            // TODO: handle exception
+            e.printStackTrace();
+        } finally {
+            if (db != null) {
+                try {
+                    db.close();
+                } catch (SQLException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
         }
         return patients;
     }
@@ -47,9 +68,9 @@ public class UserManager {
         for (int i = 9; i < 17; i++) {
             times.add(LocalTime.of(i, 0, 0));
         }
-
+        Database db = null;
         try {
-            Database db = new Database();
+            db = new Database();
             String query = "";
             if (user instanceof Professional) {
                 Professional professional = (Professional) user;
@@ -61,10 +82,17 @@ public class UserManager {
             }
             ResultSet rs = db.executeQuery(query);
             while (rs.next()) {
-                times.remove(rs.getTime("start_time").toLocalTime());
+                times.remove(Time.valueOf(rs.getString("start_time")).toLocalTime());
             }
         } catch (Exception e) {
             // TODO: handle exception
+        } finally {
+            try {
+                db.close();
+            } catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
         return times;
     }

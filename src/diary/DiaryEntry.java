@@ -3,6 +3,8 @@ package diary;
 import java.sql.*;
 import java.time.*;
 
+import org.json.JSONObject;
+
 public class DiaryEntry implements Comparable<DiaryEntry> {
     private int id;
     private Date date;
@@ -27,6 +29,15 @@ public class DiaryEntry implements Comparable<DiaryEntry> {
         this.note = note;
         this.professionalID = professional_id;
         this.patientID = patient_id;
+    }
+
+    public DiaryEntry(JSONObject jsonObject) {
+        this.id = jsonObject.getInt("id");
+        this.date = Date.valueOf(jsonObject.getString("date"));
+        this.time = Time.valueOf(jsonObject.getString("time"));
+        this.note = jsonObject.getString("note");
+        this.professionalID = jsonObject.getInt("professional_id");
+        this.patientID = jsonObject.getInt("patient_id");
     }
 
     public int getId() {
@@ -78,5 +89,15 @@ public class DiaryEntry implements Comparable<DiaryEntry> {
         return ldt.compareTo(otherLdt);
     }
 
+    public JSONObject toJSON() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", id);
+        jsonObject.put("date", date);
+        jsonObject.put("time", time);
+        jsonObject.put("note", note);
+        jsonObject.put("professional_id", professionalID);
+        jsonObject.put("patient_id", patientID);
+        return jsonObject;
+    }
     
 }

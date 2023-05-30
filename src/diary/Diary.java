@@ -1,8 +1,21 @@
 package diary;
 
-import java.sql.*;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Time;
 
-import dataStructure.*;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONTokener;
+
+import dataStructure.BinaryTree;
+import dataStructure.MyLinkedList;
+import dataStructure.MyStack;
 import dataStructure.exception.DuplicateElementException;
 import database.Database;
 import type.DiaryAction;
@@ -29,9 +42,6 @@ public class Diary {
     }
 
     public void addEntry(DiaryEntry entry) throws DuplicateElementException {
-        if (entry.getId() != 0) {
-            return;
-        }
         diaryEntries.add(entry);
         undoStack.push(new Action(entry, DiaryAction.Add));
         clearRedo();
@@ -79,7 +89,6 @@ public class Diary {
             Database db = new Database();
             String query = String.format("INSERT INTO diary (date, time, note, professional_id, patient_id) VALUES ('%s', '%s', '%s', %d, %d)", date, time, note, professionalID, patientID);
             db.executeUpdate(query);
-            db.close();
         } catch (Exception e) {
             System.out.println("Fail to add diary");
         }
@@ -94,7 +103,6 @@ public class Diary {
             Database db = new Database();
             String query = String.format("DELETE FROM diary WHERE diary_id = %d;", id);
             db.executeUpdate(query);
-            db.close();
         } catch (Exception e) {
             System.out.println("Fail to remove diary");
         }
@@ -109,7 +117,6 @@ public class Diary {
             Database db = new Database();
             String query = String.format("UPDATE diary SET date = '%s', time = '%s', note = '%s' WHERE diary_id = %d;", date, time, note, id);
             db.executeUpdate(query);
-            db.close();
         } catch (Exception e) {
             System.out.println("Fail to remove diary");
         }
@@ -117,14 +124,15 @@ public class Diary {
 
     public void loadFromDatabase(int professionalID, int patientID) {
         diaryEntries.clear();
+        Database db = null;
         try {
-            Database db = new Database();
+            db = new Database();
             String query = String.format("SELECT * FROM diary WHERE (professional_id = %d OR patient_id = %d);", professionalID, patientID);
             ResultSet rs = db.executeQuery(query);
             while (rs.next()) {
                 int id = rs.getInt("diary_id");
-                Date date = rs.getDate("date");
-                Time time = rs.getTime("time");
+                Date date = Date.valueOf(rs.getString("date"));
+                Time time = Time.valueOf(rs.getString("time"));
                 String note = rs.getString("note");
                 int proID = rs.getInt("professional_id");
                 int patID = rs.getInt("patient_id");
@@ -132,12 +140,20 @@ public class Diary {
                 DiaryEntry diaryEntry = new DiaryEntry(id, date, time, note, proID, patID);
                 diaryEntries.add(diaryEntry);
             }
-            db.close();
         } catch (SQLException e) {
             System.out.println("Fail connect to database");
             e.printStackTrace();
         } catch (DuplicateElementException d) {
             d.getMessage();
+        } finally {
+            if (db != null) {
+                try {
+                    db.close();
+                } catch (SQLException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -183,5 +199,44 @@ public class Diary {
     
     public static void clearRedo() {
         redoStack = new MyStack<>();
+    }
+
+    public void writeFile(String fileName) {
+        JSONArray jsonArray = new JSONArray();
+        for (DiaryEntry entry : diaryEntries.inOrder()) {
+            jsonArray.put(entry.toJSON());
+        }
+
+        try {
+            FileWriter fw = new FileWriter(fileName + ".json");
+            fw.write(jsonArray.toString());
+            fw.close();
+            System.out.println("The data has been written to a JSON file");
+        } catch (IOException e) {
+            System.out.println("An error occurred while writing to the file.");
+        }
+    }
+    
+    public void readFile(String fileURL) {
+        try {
+            FileReader fr = new FileReader(fileURL);
+            JSONTokener tokener = new JSONTokener(fr);
+            JSONArray jsonArray = new JSONArray(tokener);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                diaryEntries.add(new DiaryEntry(jsonArray.getJSONObject(i)));
+            }
+            System.out.println("JSON file has been read");
+            fr.close();
+        } catch (FileNotFoundException e) {
+            // TODO: handle exception
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (DuplicateElementException e) {
+            e.getMessage();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 }

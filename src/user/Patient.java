@@ -101,7 +101,7 @@ public class Patient extends User {
             patientID = rs.getInt("patient_id");
             name = rs.getString("name");
             gender = Gender.valueOf(rs.getString("gender"));
-            dateOfBirth = rs.getDate("date_of_birth");
+            dateOfBirth = Date.valueOf(rs.getString("date_of_birth"));
             phoneNumber = rs.getString("phone_number");
             address = rs.getString("address");
         }

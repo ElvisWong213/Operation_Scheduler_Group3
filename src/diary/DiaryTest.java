@@ -3,6 +3,8 @@ package diary;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.File;
 import java.sql.Date;
 import java.sql.Time;
 import dataStructure.exception.DuplicateElementException;
@@ -57,7 +59,7 @@ public class DiaryTest {
 
     @Test
     public void testUndo() throws DuplicateElementException {
-        DiaryEntry entry = new DiaryEntry(1, Date.valueOf("2023-05-20"), Time.valueOf("10:30:00"), "Test entry", 1, 1);
+        DiaryEntry entry = new DiaryEntry(Date.valueOf("2023-05-20"), Time.valueOf("10:30:00"), "Test entry", 1, 1);
         diary.addEntry(entry);
         diary.undo();
         assertEquals(0, diary.getListOfEntries().size());
@@ -65,11 +67,27 @@ public class DiaryTest {
 
     @Test
     public void testRedo() throws DuplicateElementException {
-        DiaryEntry entry = new DiaryEntry(1, Date.valueOf("2023-05-20"), Time.valueOf("10:30:00"), "Test entry", 1, 1);
+        DiaryEntry entry = new DiaryEntry(Date.valueOf("2023-05-20"), Time.valueOf("10:30:00"), "Test entry", 1, 1);
         diary.addEntry(entry);
         diary.undo();
         diary.redo();
         assertEquals(1, diary.getListOfEntries().size());
+    }
+
+    @Test
+    public void testWriteReadFile() throws DuplicateElementException {
+        DiaryEntry entry = new DiaryEntry(Date.valueOf("2023-05-20"), Time.valueOf("10:30:00"), "Test entry", 1, 1);
+        DiaryEntry entry2 = new DiaryEntry(Date.valueOf("2023-05-21"), Time.valueOf("23:30:00"), "Test entry2", 2, 2);
+        diary.addEntry(entry);
+        diary.addEntry(entry2);
+
+        String fileName = "test1";
+        diary.writeFile(fileName);
+
+        File file = new File(fileName + ".json");
+        assertTrue(file.exists());
+
+        diary.readFile(fileName + ".json");
     }
 }
 
