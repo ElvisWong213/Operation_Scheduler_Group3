@@ -1,0 +1,92 @@
+<doctors>
+  <doctor>
+    <firstName>Dr. John</firstName>
+    <lastName>Doe</lastName>
+    <middleName>Smith</middleName>
+    <specialization>Dermatology</specialization>
+  </doctor>
+  <doctor>
+    <firstName>Dr. Jane</firstName>
+    <lastName>Smith</lastName>
+    <middleName>Johnson</middleName>
+    <specialization>Neurology</specialization>
+  </doctor>
+  <doctor>
+    <firstName>Dr. Michael</firstName>
+    <lastName>Williams</lastName>
+    <middleName>Anderson</middleName>
+    <specialization>Neurology</specialization>
+  </doctor>
+  <doctor>
+    <firstName>Dr. David</firstName>
+    <lastName>Johnson</lastName>
+    <middleName>Miller</middleName>
+    <specialization>Dermatology</specialization>
+  </doctor>
+  <doctor>
+    <firstName>Dr. Sarah</firstName>
+    <lastName>Miller</lastName>
+    <middleName>Wilson</middleName>
+    <specialization>Cardiology</specialization>
+  </doctor>
+  <doctor>
+    <firstName>Dr. Andrew</firstName>
+    <lastName>Wilson</lastName>
+    <middleName>Taylor</middleName>
+    <specialization>Cardiology</specialization>
+  </doctor>
+  <doctor>
+    <firstName>Dr. Olivia</firstName>
+    <lastName>Taylor</lastName>
+    <middleName>Smith</middleName>
+    <specialization>Neurology</specialization>
+  </doctor>
+  <doctor>
+    <firstName>Dr. Richard</firstName>
+    <lastName>Johnson</lastName>
+    <middleName>Smith</middleName>
+    <specialization>Orthopedics</specialization>
+  </doctor>
+  <doctor>
+    <firstName>Dr. Lisa</firstName>
+    <lastName>Smith</lastName>
+    <middleName>Thompson</middleName>
+    <specialization>Cardiology</specialization>
+  </doctor>
+  <doctor>
+    <firstName>Dr. Emily</firstName>
+    <lastName>Thompson</lastName>
+    <middleName>Roberts</middleName>
+    <specialization>Gastroenterology</specialization>
+  </doctor>
+  <doctor>
+    <firstName>Dr. James</firstName>
+    <lastName>Roberts</lastName>
+    <middleName>Johnson</middleName>
+    <specialization>Cardiology</specialization>
+  </doctor>
+  <doctor>
+    <firstName>Dr. William</firstName>
+    <lastName>Johnson</lastName>
+    <middleName>Wilson</middleName>
+    <specialization>Cardiology</specialization>
+  </doctor>
+  <doctor>
+    <firstName>Dr. Sophia</firstName>
+    <lastName>Wilson</lastName>
+    <middleName>Miller</middleName>
+    <specialization>Cardiology</specialization>
+  </doctor>
+  <doctor>
+    <firstName>Dr. Benjamin</firstName>
+    <lastName>Miller</lastName>
+    <middleName>Anderson</middleName>
+    <specialization>Cardiology</specialization>
+  </doctor>
+  <doctor>
+    <firstName>1</firstName>
+    <lastName>1</lastName>
+    <middleName>1</middleName>
+    <specialization>Cardiology</specialization>
+  </doctor>
+</doctors>

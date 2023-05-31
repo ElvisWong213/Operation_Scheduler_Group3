@@ -1,30 +1,47 @@
 package gui;
 
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class AddNewDoctorWindow {
-    private JFrame addDoctorFrame;
+public class AddNewDoctorWindow extends JDialog  {
+    private Hospital hospital;
 
-    public void openWindow() {
-        addDoctorFrame = new JFrame("Add New Doctor");
-        addDoctorFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        addDoctorFrame.setSize(400, 300); // Уменьшаем высоту формы
-        addDoctorFrame.setLocationRelativeTo(null);
+    private JLabel firstNameLabel;
+    private JLabel lastNameLabel;
+    private JLabel middleNameLabel;
+    private JLabel specializationLabel;
 
-        // Create labels
-        JLabel firstNameLabel = new JLabel("First Name:");
-        JLabel lastNameLabel = new JLabel("Last Name:");
-        JLabel middleNameLabel = new JLabel("Middle Name:");
-        JLabel specializationLabel = new JLabel("Specialization:");
+    private JTextField firstNameTextField;
+    private JTextField lastNameTextField;
+    private JTextField middleNameTextField;
+    private JComboBox<String> specializationComboBox;
+    Doctor newDoctor;
 
-        // Create text fields
-        JTextField firstNameTextField = new JTextField();
-        JTextField lastNameTextField = new JTextField();
-        JTextField middleNameTextField = new JTextField();
+    public AddNewDoctorWindow(Hospital hospital) {
+        this.hospital = hospital;
+        setTitle("Add New Doctor");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setSize(400, 300);
+        setLocationRelativeTo(null);
+
+        createComponents();
+        createLayout();
+
+        newDoctor = null;
+    }
+
+    private void createComponents() {
+        firstNameLabel = new JLabel("First Name:");
+        lastNameLabel = new JLabel("Last Name:");
+        middleNameLabel = new JLabel("Middle Name:");
+        specializationLabel = new JLabel("Specialization:");
+
+        firstNameTextField = new JTextField();
+        lastNameTextField = new JTextField();
+        middleNameTextField = new JTextField();
 
         // Set preferred height for text fields based on font size
         Font textFieldFont = firstNameTextField.getFont();
@@ -34,66 +51,76 @@ public class AddNewDoctorWindow {
         lastNameTextField.setPreferredSize(textFieldDimension);
         middleNameTextField.setPreferredSize(textFieldDimension);
 
-        // Create specialization combo box
         String[] specializations = {"Cardiology", "Dermatology", "Endocrinology", "Gastroenterology", "Neurology",
                 "Ophthalmology", "Orthopedics", "Pediatrics", "Psychiatry", "Urology"};
-        JComboBox<String> specializationComboBox = new JComboBox<>(specializations);
+        specializationComboBox = new JComboBox<>(specializations);
+    }
 
-        // Create the main panel and set its layout
+    private void createLayout() {
         JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new GridLayout(0, 2, 10, 10)); // 2 columns, horizontal and vertical gaps
+        mainPanel.setLayout(new GridLayout(0, 2, 10, 10));
 
-        // Add components to the main panel with proper spacing
-        mainPanel.add(createPaddedPanel(firstNameLabel, 20)); // Add First Name label with left padding
+        mainPanel.add(createPaddedPanel(firstNameLabel, 20));
         mainPanel.add(firstNameTextField);
-        mainPanel.add(createPaddedPanel(lastNameLabel, 20)); // Add Last Name label with left padding
+        mainPanel.add(createPaddedPanel(lastNameLabel, 20));
         mainPanel.add(lastNameTextField);
-        mainPanel.add(createPaddedPanel(middleNameLabel, 20)); // Add Middle Name label with left padding
+        mainPanel.add(createPaddedPanel(middleNameLabel, 20));
         mainPanel.add(middleNameTextField);
-        mainPanel.add(createPaddedPanel(specializationLabel, 20)); // Add Specialization label with left padding
+        mainPanel.add(createPaddedPanel(specializationLabel, 20));
         mainPanel.add(specializationComboBox);
 
-        // Create buttons
         JButton addButton = new JButton("Add");
         JButton cancelButton = new JButton("Cancel");
 
-        // Create the bottom panel and set its layout
         JPanel bottomPanel = new JPanel();
         bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-
-        // Add buttons to the bottom panel with right spacing
         bottomPanel.add(addButton);
-        bottomPanel.add(Box.createHorizontalStrut(30)); // Add 30-pixel horizontal spacing
+        bottomPanel.add(Box.createHorizontalStrut(30));
         bottomPanel.add(cancelButton);
 
-        // Set layout for the frame
-        addDoctorFrame.setLayout(new BorderLayout());
+        setLayout(new BorderLayout());
+        add(mainPanel, BorderLayout.CENTER);
+        add(bottomPanel, BorderLayout.SOUTH);
 
-        // Add components to the frame
-        addDoctorFrame.add(mainPanel, BorderLayout.CENTER);
-        addDoctorFrame.add(bottomPanel, BorderLayout.SOUTH);
-
-        // Add action listeners to the buttons
         addButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // Handle add button click event
+                String firstName = firstNameTextField.getText();
+                String lastName = lastNameTextField.getText();
+                String middleName = middleNameTextField.getText();
+                String specialization = (String) specializationComboBox.getSelectedItem();
+
+                newDoctor = new Doctor(firstName, lastName, middleName, specialization);
+                hospital.addDoctor(newDoctor);
+
+                JOptionPane.showMessageDialog(AddNewDoctorWindow.this, "Doctor added successfully!");
+
+                firstNameTextField.setText("");
+                lastNameTextField.setText("");
+                middleNameTextField.setText("");
+                specializationComboBox.setSelectedIndex(0);
+
+                setVisible(false);
+
             }
         });
 
         cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                addDoctorFrame.dispose(); // Close the window
+                setVisible(false);
+                dispose();
             }
         });
-
-        addDoctorFrame.setVisible(true);
     }
 
-    // Helper method to create a padded panel with left padding
     private JPanel createPaddedPanel(JComponent component, int padding) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(new EmptyBorder(0, padding, 0, 0));
         panel.add(component, BorderLayout.WEST);
         return panel;
+    }
+
+
+    public Doctor getNewDoctor() {
+        return  newDoctor;
     }
 }

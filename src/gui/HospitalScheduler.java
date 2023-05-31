@@ -1,19 +1,19 @@
 package gui;
+
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-
-
-public class HospitalScheduler
-{
+public class HospitalScheduler {
     private JFrame frame;
-    // Остальной код...
+    private Hospital hospital;
 
-    public HospitalScheduler()
-    {
-        frame = new JFrame("Hospital Scheduler");
+
+    public HospitalScheduler(Hospital hospital) {
+        this.hospital = hospital;
+
+        frame = new JFrame("Hospital Scheduler. Admin mode.");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         int width = 800;
@@ -85,14 +85,13 @@ public class HospitalScheduler
         });
         appointmentsMenu.add(showAllAppointmentsMenuItem);
 
-        // Create menu item "Schedule Appointment"
-        JMenuItem scheduleAppointmentMenuItem = new JMenuItem("Schedule Appointment");
-        scheduleAppointmentMenuItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                scheduleAppointment();
-            }
-        });
-        appointmentsMenu.add(scheduleAppointmentMenuItem);
+
+
+        ImagePanel imagePanel = new ImagePanel("src/gui/bcg.jpg");
+        // Set layout manager for the frame
+        frame.setLayout(new BorderLayout());
+        // Add the image panel to the center of the frame
+        frame.add(imagePanel, BorderLayout.CENTER);
 
 
         frame.setVisible(true);
@@ -100,52 +99,44 @@ public class HospitalScheduler
 
     // Method to open "Show All Doctors" window
     private void showAllDoctors() {
-        ShowDoctorWindow addDoctorWindow = new ShowDoctorWindow();
-        addDoctorWindow.openWindow();
+        ShowDoctorWindow showDoctorWindow = new ShowDoctorWindow(hospital);
+        showDoctorWindow.openWindow();
     }
 
-    // Method to open "Add New Doctor" window
     // Method to open "Add New Doctor" window
     private void addNewDoctor() {
-        AddNewDoctorWindow addNewDoctorWindow = new AddNewDoctorWindow();
-        addNewDoctorWindow.openWindow();
+        AddNewDoctorWindow addNewDoctorWindow = new AddNewDoctorWindow(hospital);
+
+        addNewDoctorWindow.setModal(true); // Set the dialog as modal
+        addNewDoctorWindow.setVisible(true);
+
+        addNewDoctorWindow.dispose();
     }
-
-
 
     // Method to open "Show All Patients" window
     private void showAllPatients() {
-        ShowPatientsWindow showPatientsWindow = new ShowPatientsWindow();
+        ShowPatientsWindow showPatientsWindow = new ShowPatientsWindow(hospital);
         showPatientsWindow.openWindow();
     }
 
     // Method to open "Add New Patient" window
     private void addNewPatient() {
+        AddNewPatientWindow addPatientWindow = new AddNewPatientWindow(hospital);
 
-        AddNewPatientWindow addPatientWindow = new AddNewPatientWindow();
-        addPatientWindow.openWindow();
+        addPatientWindow.setModal(true); // Set the dialog as modal
+        addPatientWindow.setVisible(true);
 
-            }
+        addPatientWindow.dispose();
 
+    }
 
     // Method to open "Show All Appointments" window
     private void showAllAppointments() {
-        ShowAppointmentsWindow showAppointmentsWindow = new ShowAppointmentsWindow();
-        showAppointmentsWindow.openWindow();
+        ShowAppointmentsWindow showAppointmentsWindow = new ShowAppointmentsWindow(hospital);
+
     }
 
-    // Method to open "Schedule Appointment" window
-    private void scheduleAppointment() {
-        AppointmentWindow appointmentWindow = new AppointmentWindow("John Doe");
-        //appointmentWindow.openWindow();
-    }
+
+
 
 }
-
-
-
-
-
-
-
-

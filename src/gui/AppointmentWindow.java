@@ -1,42 +1,64 @@
 package gui;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Vector;
+import java.util.*;
 
-public class AppointmentWindow {
-    private JFrame appointmentFrame;
+public class AppointmentWindow extends JDialog {
+    Appointment appointment;
     private String patientName;
     private DefaultTableModel doctorTableModel;
-    private JComboBox<String> doctorComboBox;
 
-    public AppointmentWindow(String patientName) {
-        this.patientName = patientName;
 
-        appointmentFrame = new JFrame("Make Appointment");
-        appointmentFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        appointmentFrame.setSize(600, 400);
-        appointmentFrame.setLocationRelativeTo(null);
+    private JComboBox<Doctor> doctorComboBox;
+    JTextField dayTextField ;
+    JTextField monthTextField;
+    JTextField yearTextField;
+
+    // Create time input fields
+    JTextField hourTextField;
+    JTextField minuteTextField;
+
+    JTextArea notesTextArea;
+    Hospital hospital;
+
+    public void openWindow() {
+
+    }
+    public AppointmentWindow(Hospital hospital) {
+        this.hospital = hospital;
+        this.patientName = hospital.ActivePatient.getPatientInfo();
+
+        setTitle("Make Appointment");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setSize(800, 400);
+        setLocationRelativeTo(null);
 
         // Create labels
-        JLabel nameLabel = new JLabel("Patient Name: " + patientName);
+        JLabel nameLabel = new JLabel("Patient: " + patientName);
         JLabel dateLabel = new JLabel("Date:");
         JLabel timeLabel = new JLabel("Time:");
         JLabel doctorLabel = new JLabel("Doctor:");
         JLabel notesLabel = new JLabel("Notes:");
 
         // Create number input fields
-        JTextField dayTextField = new JTextField();
-        JTextField monthTextField = new JTextField();
-        JTextField yearTextField = new JTextField();
+         dayTextField = new JTextField();
+         monthTextField = new JTextField();
+         yearTextField = new JTextField();
 
         // Create time input fields
-        JTextField hourTextField = new JTextField();
-        JTextField minuteTextField = new JTextField();
+         hourTextField = new JTextField();
+         minuteTextField = new JTextField();
 
         // Set current date and time to the input fields
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd");
@@ -53,11 +75,22 @@ public class AppointmentWindow {
         minuteTextField.setText(minuteFormat.format(currentDate));
 
         // Create doctor selection combo box
-        String[] doctors = {"Dr. Smith", "Dr. Johnson", "Dr. Williams"};
-        doctorComboBox = new JComboBox<>(doctors);
+        List<Doctor> doctors = hospital.getDoctors();
+        DefaultComboBoxModel<Doctor> comboBoxModel = new DefaultComboBoxModel<>(doctors.toArray(new Doctor[0]));
+        doctorComboBox = new JComboBox<>(comboBoxModel);
+        doctorComboBox.setRenderer(new DefaultListCellRenderer() {
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (value instanceof Doctor) {
+                    Doctor doctor = (Doctor) value;
+                    setText(doctor.getFullName());
+                }
+                return this;
+            }
+        });
 
         // Create notes text area
-        JTextArea notesTextArea = new JTextArea();
+         notesTextArea = new JTextArea();
         JScrollPane notesScrollPane = new JScrollPane(notesTextArea);
 
         // Create buttons
@@ -76,7 +109,7 @@ public class AppointmentWindow {
         bottomPanel.add(cancelButton);
 
         // Set layout for the frame
-        appointmentFrame.setLayout(new BorderLayout());
+        setLayout(new BorderLayout());
 
         // Create the main panel and set its layout
         JPanel mainPanel = new JPanel();
@@ -173,8 +206,8 @@ public class AppointmentWindow {
         mainPanel.add(rightPanel);
 
 
-        appointmentFrame.add(mainPanel, BorderLayout.CENTER);
-        appointmentFrame.add(bottomPanel, BorderLayout.SOUTH);
+        add(mainPanel, BorderLayout.CENTER);
+        add(bottomPanel, BorderLayout.SOUTH);
 
 
         searchButton.addActionListener(new ActionListener() {
@@ -186,12 +219,15 @@ public class AppointmentWindow {
         bookButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // Handle book appointment button click event
+                saveAppointment();
+                setVisible(false);
+                dispose();
             }
         });
 
         cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                appointmentFrame.dispose(); // Close the window
+                dispose(); // Close the window
             }
         });
 
@@ -201,12 +237,46 @@ public class AppointmentWindow {
             }
         });
 
-        appointmentFrame.setVisible(true);
+        //setVisible(true);
     }
 
     private void addDoctorToTable() {
-        String selectedDoctor = (String) doctorComboBox.getSelectedItem();
-        doctorTableModel.addRow(new Object[]{selectedDoctor});
+        Doctor selectedDoctor = (Doctor) doctorComboBox.getSelectedItem();
+        doctorTableModel.addRow(new Object[]{selectedDoctor.getFullName()});
     }
+
+    private void saveAppointment() {
+        //String selectedDoctor = (String) doctorComboBox.getSelectedItem();
+
+
+        appointment = new Appointment(yearTextField.getText(), monthTextField.getText(), dayTextField.getText(),
+                hourTextField.getText(), minuteTextField.getText(), hospital.ActivePatient, notesTextArea.getText());
+
+
+        List<String> selectedDoctors;
+        selectedDoctors = new ArrayList<>();
+
+
+        for (int i = 0; i < doctorTableModel.getRowCount(); i++) {
+            String doctorFullName = (String) doctorTableModel.getValueAt(i, 0);
+
+            if (doctorFullName != null) {
+                selectedDoctors.add(doctorFullName);
+            }
+        }
+
+
+        appointment.setDoctors(selectedDoctors);
+
+
+
+        hospital.addAppointment(appointment);
+        hospital.saveAppointmentsToFile();
+    }
+
+    public Appointment getNewAppointment() {
+        return appointment;
+    }
+
 }
 

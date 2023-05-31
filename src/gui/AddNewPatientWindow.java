@@ -1,100 +1,182 @@
 package gui;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class AddNewPatientWindow {
-    private JFrame addPatientFrame;
+public class AddNewPatientWindow extends JDialog {
+    private Hospital hospital;
+    private JLabel firstNameLabel;
+    private JLabel lastNameLabel;
+    private JLabel ageLabel;
+    private JLabel weightLabel;
+    private JLabel heightLabel;
+    private JLabel phoneLabel;
+    private JLabel addressLabel;
+    private JLabel notesLabel;
+    private JLabel loginLabel;
+    private JLabel passwordLabel;
 
-    public void openWindow() {
-        addPatientFrame = new JFrame("Add New Patient");
-        addPatientFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        addPatientFrame.setSize(400, 400);
-        addPatientFrame.setLocationRelativeTo(null);
+    private JTextField firstNameTextField;
+    private JTextField lastNameTextField;
+    private JTextField ageTextField;
+    private JTextField weightTextField;
+    private JTextField heightTextField;
+    private JTextField phoneTextField;
+    private JTextField addressTextField;
+    private JTextArea notesTextArea;
+    private JTextField loginTextField;
+    private JPasswordField passwordTextField;
 
-        // Create labels
-        JLabel firstNameLabel = new JLabel("First Name:");
-        JLabel lastNameLabel = new JLabel("Last Name:");
-        JLabel ageLabel = new JLabel("Age:");
-        JLabel weightLabel = new JLabel("Weight:");
-        JLabel heightLabel = new JLabel("Height:");
-        JLabel phoneLabel = new JLabel("Phone:");
-        JLabel addressLabel = new JLabel("Address:");
-        JLabel notesLabel = new JLabel("Notes:");
+    private JButton addButton;
+    private JButton cancelButton;
 
-        // Create text fields
-        JTextField firstNameTextField = new JTextField();
-        JTextField lastNameTextField = new JTextField();
-        JTextField ageTextField = new JTextField();
-        JTextField weightTextField = new JTextField();
-        JTextField heightTextField = new JTextField();
-        JTextField phoneTextField = new JTextField();
-        JTextField addressTextField = new JTextField();
-        JTextArea notesTextArea = new JTextArea();
+    private Patient newPatient;
 
-        // Create the main panel and set its layout
+    public AddNewPatientWindow(Hospital hospital) {
+        this.hospital = hospital;
+        setTitle("Add New Patient");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setSize(400, 500);
+        setLocationRelativeTo(null);
+
+        createComponents();
+        createLayout();
+
+        newPatient = null;
+    }
+
+    private void createComponents() {
+        firstNameLabel = new JLabel("First Name:");
+        lastNameLabel = new JLabel("Last Name:");
+        ageLabel = new JLabel("Age:");
+        weightLabel = new JLabel("Weight:");
+        heightLabel = new JLabel("Height:");
+        phoneLabel = new JLabel("Phone:");
+        addressLabel = new JLabel("Address:");
+        notesLabel = new JLabel("Notes:");
+        loginLabel = new JLabel("Login:");
+        passwordLabel = new JLabel("Password:");
+
+        firstNameTextField = new JTextField();
+        lastNameTextField = new JTextField();
+        ageTextField = new JTextField();
+        weightTextField = new JTextField();
+        heightTextField = new JTextField();
+        phoneTextField = new JTextField();
+        addressTextField = new JTextField();
+        notesTextArea = new JTextArea();
+        loginTextField = new JTextField();
+        passwordTextField = new JPasswordField();
+
+        // Set preferred height for text fields based on font size
+        Font textFieldFont = firstNameTextField.getFont();
+        int preferredHeight = textFieldFont.getSize() + 8; // 8 is an arbitrary value for padding
+        Dimension textFieldDimension = new Dimension(firstNameTextField.getPreferredSize().width, preferredHeight);
+        firstNameTextField.setPreferredSize(textFieldDimension);
+        lastNameTextField.setPreferredSize(textFieldDimension);
+        ageTextField.setPreferredSize(textFieldDimension);
+        weightTextField.setPreferredSize(textFieldDimension);
+        heightTextField.setPreferredSize(textFieldDimension);
+        phoneTextField.setPreferredSize(textFieldDimension);
+        addressTextField.setPreferredSize(textFieldDimension);
+        notesTextArea.setLineWrap(true);
+        loginTextField.setPreferredSize(textFieldDimension);
+        passwordTextField.setPreferredSize(textFieldDimension);
+
+        addButton = new JButton("Add");
+        cancelButton = new JButton("Cancel");
+    }
+
+    private void createLayout() {
         JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new GridLayout(0, 2, 10, 10)); // 2 columns, horizontal and vertical gaps
+        mainPanel.setLayout(new GridLayout(0, 2, 10, 10));
 
-        // Add components to the main panel with proper spacing
-        mainPanel.add(createPaddedPanel(firstNameLabel, 20)); // Add First Name label with left padding
+        mainPanel.add(createPaddedPanel(firstNameLabel, 20));
         mainPanel.add(firstNameTextField);
-        mainPanel.add(createPaddedPanel(lastNameLabel, 20)); // Add Last Name label with left padding
+        mainPanel.add(createPaddedPanel(lastNameLabel, 20));
         mainPanel.add(lastNameTextField);
-        mainPanel.add(createPaddedPanel(ageLabel, 20)); // Add Age label with left padding
+        mainPanel.add(createPaddedPanel(ageLabel, 20));
         mainPanel.add(ageTextField);
-        mainPanel.add(createPaddedPanel(weightLabel, 20)); // Add Weight label with left padding
+        mainPanel.add(createPaddedPanel(weightLabel, 20));
         mainPanel.add(weightTextField);
-        mainPanel.add(createPaddedPanel(heightLabel, 20)); // Add Height label with left padding
+        mainPanel.add(createPaddedPanel(heightLabel, 20));
         mainPanel.add(heightTextField);
-        mainPanel.add(createPaddedPanel(phoneLabel, 20)); // Add Phone label with left padding
+        mainPanel.add(createPaddedPanel(phoneLabel, 20));
         mainPanel.add(phoneTextField);
-        mainPanel.add(createPaddedPanel(addressLabel, 20)); // Add Address label with left padding
+        mainPanel.add(createPaddedPanel(addressLabel, 20));
         mainPanel.add(addressTextField);
-        mainPanel.add(createPaddedPanel(notesLabel, 20)); // Add Notes label with left padding
+        mainPanel.add(createPaddedPanel(notesLabel, 20));
         mainPanel.add(notesTextArea);
+        mainPanel.add(createPaddedPanel(loginLabel, 20));
+        mainPanel.add(loginTextField);
+        mainPanel.add(createPaddedPanel(passwordLabel, 20));
+        mainPanel.add(passwordTextField);
 
-        // Create buttons
-        JButton addButton = new JButton("Add");
-        JButton cancelButton = new JButton("Cancel");
-
-        // Create the bottom panel and set its layout
         JPanel bottomPanel = new JPanel();
         bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-
-        // Add buttons to the bottom panel with right spacing
         bottomPanel.add(addButton);
-        bottomPanel.add(Box.createHorizontalStrut(30)); // Add 30-pixel horizontal spacing
+        bottomPanel.add(Box.createHorizontalStrut(30));
         bottomPanel.add(cancelButton);
 
-        // Set layout for the frame
-        addPatientFrame.setLayout(new BorderLayout());
+        setLayout(new BorderLayout());
+        add(mainPanel, BorderLayout.CENTER);
+        add(bottomPanel, BorderLayout.SOUTH);
 
-        // Add components to the frame
-        addPatientFrame.add(mainPanel, BorderLayout.CENTER);
-        addPatientFrame.add(bottomPanel, BorderLayout.SOUTH);
-
-        // Add action listeners to the buttons
         addButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // Handle add button click event
+                String firstName = firstNameTextField.getText();
+                String lastName = lastNameTextField.getText();
+                int age = Integer.parseInt(ageTextField.getText());
+                double weight = Double.parseDouble(weightTextField.getText());
+                double height = Double.parseDouble(heightTextField.getText());
+                String phone = phoneTextField.getText();
+                String address = addressTextField.getText();
+                String notes = notesTextArea.getText();
+                String login = loginTextField.getText();
+                String password = new String(passwordTextField.getPassword());
+
+                newPatient = new Patient(firstName, lastName, age, weight, height, phone, address, notes, login, password);
+                hospital.addPatient(newPatient);
+
+                JOptionPane.showMessageDialog(AddNewPatientWindow.this, "Patient added successfully!");
+
+                clearFields();
+                setVisible(false);
             }
         });
 
         cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                addPatientFrame.dispose(); // Close the window
+                setVisible(false);
+                dispose();
             }
         });
-        addPatientFrame.setVisible(true);
     }
 
-    // Helper method to create a padded panel with left padding
     private JPanel createPaddedPanel(JComponent component, int padding) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(new EmptyBorder(0, padding, 0, 0));
         panel.add(component, BorderLayout.WEST);
         return panel;
+    }
+
+    private void clearFields() {
+        firstNameTextField.setText("");
+        lastNameTextField.setText("");
+        ageTextField.setText("");
+        weightTextField.setText("");
+        heightTextField.setText("");
+        phoneTextField.setText("");
+        addressTextField.setText("");
+        notesTextArea.setText("");
+        loginTextField.setText("");
+        passwordTextField.setText("");
+    }
+
+    public Patient getNewPatient() {
+        return newPatient;
     }
 }

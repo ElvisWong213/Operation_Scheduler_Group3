@@ -10,19 +10,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-public class ShowAppointmentsWindow {
+public class ShowUserAppointmentsWindow {
     private JFrame showAppointmentsFrame;
     private Hospital hospital;
     private JTable appointmentsTable;
     private DefaultTableModel tableModel;
 
-    public ShowAppointmentsWindow(Hospital hospital) {
+    public ShowUserAppointmentsWindow(Hospital hospital) {
         this.hospital = hospital;
         openWindow();
     }
 
     public void openWindow() {
-        showAppointmentsFrame = new JFrame("Appointments");
+        showAppointmentsFrame = new JFrame("Appointments " + hospital.ActivePatient.getPatientInfo());
         showAppointmentsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         showAppointmentsFrame.setSize(800, 500);
         showAppointmentsFrame.setLocationRelativeTo(null);
@@ -57,7 +57,7 @@ public class ShowAppointmentsWindow {
 
         // Add buttons to the panel
         bottomPanel.add(allAppointmentsButton);
-        //bottomPanel.add(addButton);
+        bottomPanel.add(addButton);
         bottomPanel.add(deleteButton);
         bottomPanel.add(detailsButton);
         bottomPanel.add(exitButton);
@@ -77,15 +77,19 @@ public class ShowAppointmentsWindow {
         tableModel.addColumn("Doctors");
 
         // Fill the table model with data from the list of appointments
-        List<Appointment> appointmentList = hospital.getAppointments();
-        for (Appointment appointment : appointmentList) {
-            Object[] rowData = {
-                    appointment.getDate(),
-                    appointment.getPatient().getPatientInfo(),
-                    appointment.getDescription(),
-                    String.join(", ", appointment.getDoctors())
-            };
-            tableModel.addRow(rowData);
+        java.util.List<Appointment> appointmentList = hospital.getAppointments();
+        for (Appointment appointment : appointmentList)
+
+        {
+            if (hospital.ActivePatient.getPatientInfo().equals(appointment.getPatient().getPatientInfo())) {
+                Object[] rowData = {
+                        appointment.getDate(),
+                        appointment.getPatient().getPatientInfo(),
+                        appointment.getDescription(),
+                        String.join(", ", appointment.getDoctors())
+                };
+                tableModel.addRow(rowData);
+            }
         }
 
         // Set the table model
@@ -101,8 +105,10 @@ public class ShowAppointmentsWindow {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 int selectedRow = appointmentsTable.getSelectedRow();
-                deleteButton.setEnabled(selectedRow != -1); // Enable or disable the Delete button based on row selection
-                detailsButton.setEnabled(selectedRow != -1); // Enable or disable the Details button based on row selection
+                deleteButton.setEnabled(selectedRow != -1); // Enable or disable the Delete button based on row
+                                                            // selection
+                detailsButton.setEnabled(selectedRow != -1); // Enable or disable the Details button based on row
+                                                             // selection
             }
         });
 
@@ -118,8 +124,6 @@ public class ShowAppointmentsWindow {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Show the form for adding a new appointment
-
-
 
                 AppointmentWindow addNewAppointmentWindow = new AppointmentWindow(hospital);
                 addNewAppointmentWindow.setModal(true); // Set the dialog as modal
@@ -147,10 +151,12 @@ public class ShowAppointmentsWindow {
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = appointmentsTable.getSelectedRow();
                 if (selectedRow == -1) {
-                    JOptionPane.showMessageDialog(null, "Please select a row to delete.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Please select a row to delete.", "Error",
+                            JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                int option = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this appointment?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
+                int option = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this appointment?",
+                        "Confirm Delete", JOptionPane.YES_NO_OPTION);
                 if (option == JOptionPane.YES_OPTION) {
                     List<Appointment> appointmentList = hospital.getAppointments();
                     appointmentList.remove(selectedRow);
@@ -166,7 +172,8 @@ public class ShowAppointmentsWindow {
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = appointmentsTable.getSelectedRow();
                 if (selectedRow == -1) {
-                    JOptionPane.showMessageDialog(null, "Please select a row to view details.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Please select a row to view details.", "Error",
+                            JOptionPane.ERROR_MESSAGE);
                     return;
                 }
                 Appointment appointment = hospital.getAppointments().get(selectedRow);
