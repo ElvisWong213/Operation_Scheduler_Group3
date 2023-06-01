@@ -33,13 +33,17 @@ CREATE TABLE patient (
 
 INSERT INTO user (email, password) VALUES 
 ('professional@gmail.com', 'abc123'),
-('patient@gmail.com', 'def456');
+('patient@gmail.com', 'def456'),
+('test1', 'abc'),
+('test2', 'def');
 
-INSERT INTO professional (user_id, name, profession, work_location)
-VALUES (1, 'abc', 'Doctor', 'UK');
+INSERT INTO professional (user_id, name, profession, work_location) VALUES 
+(1, 'abc', 'Doctor', 'UK'),
+(3, 'test1', 'Doctor', 'UK');
 
-INSERT INTO patient (user_id, name, gender, date_of_birth, phone_number, address)
-VALUES (2, 'def', 'Male', '2022-1-1', '12345678', 'UK');
+INSERT INTO patient (user_id, name, gender, date_of_birth, phone_number, address) VALUES
+(2, 'def', 'Male', '2022-1-1', '12345678', 'UK'),
+(4, 'test2', 'Female', '2020-1-1', '9876543', 'UK');
 
 -- appointment database
 CREATE TABLE appointment (
@@ -48,14 +52,15 @@ CREATE TABLE appointment (
     start_time TIME,
     end_time TIME,
     treatment_type VARCHAR(50),
+    description VARCHAR(100),
     professional_id INTEGER,
     patient_id INTEGER,
     FOREIGN KEY (professional_id) REFERENCES professional(professional_id),
     FOREIGN KEY (patient_id) REFERENCES patient(patient_id)
 );
 
-INSERT INTO appointment (date, start_time, end_time, treatment_type, professional_id, patient_id)
-VALUES ('2023-05-30', '12:00:00', '13:00:00', 'Consultation', 1, 1);
+INSERT INTO appointment (date, start_time, end_time, treatment_type, description, professional_id, patient_id)
+VALUES ('2023-05-30', '12:00:00', '13:00:00', 'Consultation', 'description', 1, 1);
 
 -- diary database
 CREATE TABLE diary (

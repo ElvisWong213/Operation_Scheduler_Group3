@@ -1,4 +1,4 @@
-package gui;
+package gui.basic;
 
 public class Patient {
     private String firstName;

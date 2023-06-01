@@ -1,6 +1,10 @@
-package gui;
+package gui.admin;
 
 import javax.swing.*;
+
+import gui.ImagePanel;
+import gui.basic.Hospital;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

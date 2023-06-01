@@ -67,7 +67,7 @@ public class Professional extends User {
 
     @Override
     public void getUserById(int id) throws SQLException {
-        String query = String.format("SELECT * FROM professional WHERE professional_id = %2d;", id);
+        String query = String.format("SELECT * FROM professional WHERE professional_id = %d;", id);
         getDataFromDatabase(query);
         super.getUserById(userID);
     }
@@ -100,4 +100,28 @@ public class Professional extends User {
         return professionalID != 0;
     }
 
+
+    public String getFullInfo() {
+        StringBuilder output = new StringBuilder();
+
+        output.append("Doctors Information:\n");
+        output.append("Name: " + name + "\n");
+        output.append("Specialization: " + profession + "\n");
+        output.append("Work Location: " + workLocation + "\n");
+        output.append("Email: " + email);
+        return output.toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Professional) {
+            Professional professionObj = (Professional) obj;
+            if (userID == professionObj.userID) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    
 }

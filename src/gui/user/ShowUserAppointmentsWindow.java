@@ -1,34 +1,44 @@
-package gui;
+package gui.user;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+
+import user.Patient;
+import user.Professional;
+import appointment.Appointment;
+import appointment.AppointmentEntry;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.util.List;
 
 public class ShowUserAppointmentsWindow {
     private JFrame showAppointmentsFrame;
-    private Hospital hospital;
+    private Patient patient;
+    private Appointment appointment;
     private JTable appointmentsTable;
     private DefaultTableModel tableModel;
 
-    public ShowUserAppointmentsWindow(Hospital hospital) {
-        this.hospital = hospital;
+    public ShowUserAppointmentsWindow(Patient patient) {
+        this.patient = patient;
+        this.appointment = new Appointment();
+        this.appointment.getAllAppointments(0, patient.getPatientID());
         openWindow();
     }
 
     public void openWindow() {
-        showAppointmentsFrame = new JFrame("Appointments " + hospital.ActivePatient.getPatientInfo());
+        showAppointmentsFrame = new JFrame("Appointments " + patient.getInfo());
         showAppointmentsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         showAppointmentsFrame.setSize(800, 500);
         showAppointmentsFrame.setLocationRelativeTo(null);
 
         // Check if there are appointments in the Hospital object
-        if (hospital.getAppointments().isEmpty()) {
+        if (appointment.getAppointments().isEmpty()) {
             JOptionPane.showMessageDialog(null, "No appointments found.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -38,8 +48,8 @@ public class ShowUserAppointmentsWindow {
         JScrollPane scrollPane = new JScrollPane(appointmentsTable);
 
         // Create buttons
-        JButton allAppointmentsButton = new JButton("All Appointments");
         JButton addButton = new JButton("Add");
+        JButton editButton = new JButton("Edit");
         JButton deleteButton = new JButton("Delete");
         JButton detailsButton = new JButton("Details");
         JButton exitButton = new JButton("Exit");
@@ -49,15 +59,15 @@ public class ShowUserAppointmentsWindow {
         bottomPanel.setLayout(new GridLayout(1, 5, 10, 0)); // 1 row, 5 columns, horizontal and vertical gaps
 
         // Add empty borders to the buttons to create spacing
-        allAppointmentsButton.setBorder(new EmptyBorder(10, 10, 10, 10));
         addButton.setBorder(new EmptyBorder(10, 10, 10, 10));
+        editButton.setBorder(new EmptyBorder(10, 10, 10, 10));
         deleteButton.setBorder(new EmptyBorder(10, 10, 10, 10));
         detailsButton.setBorder(new EmptyBorder(10, 10, 10, 10));
         exitButton.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         // Add buttons to the panel
-        bottomPanel.add(allAppointmentsButton);
         bottomPanel.add(addButton);
+        bottomPanel.add(editButton);
         bottomPanel.add(deleteButton);
         bottomPanel.add(detailsButton);
         bottomPanel.add(exitButton);
@@ -70,27 +80,22 @@ public class ShowUserAppointmentsWindow {
         showAppointmentsFrame.add(bottomPanel, BorderLayout.SOUTH);
 
         // Create the table model
-        tableModel = new DefaultTableModel();
+        tableModel = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         tableModel.addColumn("Date");
+        tableModel.addColumn("Start Time");
+        tableModel.addColumn("End Time");
         tableModel.addColumn("Patient");
+        tableModel.addColumn("Treatment Type");
         tableModel.addColumn("Description");
         tableModel.addColumn("Doctors");
 
         // Fill the table model with data from the list of appointments
-        java.util.List<Appointment> appointmentList = hospital.getAppointments();
-        for (Appointment appointment : appointmentList)
-
-        {
-            if (hospital.ActivePatient.getPatientInfo().equals(appointment.getPatient().getPatientInfo())) {
-                Object[] rowData = {
-                        appointment.getDate(),
-                        appointment.getPatient().getPatientInfo(),
-                        appointment.getDescription(),
-                        String.join(", ", appointment.getDoctors())
-                };
-                tableModel.addRow(rowData);
-            }
-        }
+        initialiseTable();
 
         // Set the table model
         appointmentsTable.setModel(tableModel);
@@ -113,10 +118,23 @@ public class ShowUserAppointmentsWindow {
         });
 
         // Add action listener for All Appointments button
-        allAppointmentsButton.addActionListener(new ActionListener() {
+        editButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                appointmentsTable.setModel(tableModel); // Set the table model with all appointments data
+                int selectedRow = appointmentsTable.getSelectedRow();
+                if (selectedRow == -1) {
+                    JOptionPane.showMessageDialog(null, "Please select a row to edit.", "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                AppointmentWindow addNewAppointmentWindow = new AppointmentWindow(patient, appointment.getAppointments().get(selectedRow));
+                addNewAppointmentWindow.setModal(true); // Set the dialog as modal
+                addNewAppointmentWindow.setVisible(true);
+
+                appointment.getAllAppointments(0, patient.getPatientID());
+                initialiseTable();
+
             }
         });
 
@@ -124,24 +142,12 @@ public class ShowUserAppointmentsWindow {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Show the form for adding a new appointment
-
-                AppointmentWindow addNewAppointmentWindow = new AppointmentWindow(hospital);
+                AppointmentWindow addNewAppointmentWindow = new AppointmentWindow(patient, null);
                 addNewAppointmentWindow.setModal(true); // Set the dialog as modal
                 addNewAppointmentWindow.setVisible(true);
-
-                Appointment newAppointment = addNewAppointmentWindow.getNewAppointment();
-
-                if (newAppointment != null) {
-                    // Update the table model with the new data
-                    Object[] rowData = {
-                            newAppointment.getDate(),
-                            newAppointment.getPatient().getPatientInfo(),
-                            newAppointment.getDescription(),
-                            String.join(", ", newAppointment.getDoctors())
-                    };
-                    tableModel.addRow(rowData);
-                }
-                addNewAppointmentWindow.dispose();
+        
+                appointment.getAllAppointments(0, patient.getPatientID());
+                initialiseTable();
             }
         });
 
@@ -158,9 +164,9 @@ public class ShowUserAppointmentsWindow {
                 int option = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this appointment?",
                         "Confirm Delete", JOptionPane.YES_NO_OPTION);
                 if (option == JOptionPane.YES_OPTION) {
-                    List<Appointment> appointmentList = hospital.getAppointments();
-                    appointmentList.remove(selectedRow);
-                    tableModel.removeRow(selectedRow);
+                    Appointment.removeAppointment(appointment.getAppointments().get(selectedRow));
+                    appointment.getAllAppointments(0, patient.getPatientID());
+                    initialiseTable();
                     JOptionPane.showMessageDialog(null, "Appointment deleted successfully!");
                 }
             }
@@ -176,8 +182,8 @@ public class ShowUserAppointmentsWindow {
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                Appointment appointment = hospital.getAppointments().get(selectedRow);
-                showAppointmentDetails(appointment);
+                AppointmentEntry selectedAppointment = appointment.getAppointments().get(selectedRow);
+                showAppointmentDetails(selectedAppointment);
             }
         });
 
@@ -193,12 +199,49 @@ public class ShowUserAppointmentsWindow {
         showAppointmentsFrame.setVisible(true);
     }
 
-    private void showAppointmentDetails(Appointment appointment) {
+    private void initialiseTable() {
+        tableModel.setRowCount(0);
+        for (AppointmentEntry appointmentEntry : appointment.getAppointments())
+        {
+            try {
+                Patient patientTS = new Patient();
+                patientTS.getUserById(appointmentEntry.getPatientID());
+                Professional professionalTS = new Professional();
+                professionalTS.getUserById(appointmentEntry.getProfessionalID());
+                Object[] rowData = {
+                    appointmentEntry.getDate(),
+                    appointmentEntry.getStartTime(),
+                    appointmentEntry.getEndTime(),
+                    patientTS.getInfo(),
+                    appointmentEntry.getTreatmentType(),
+                    appointmentEntry.getDescription(),
+                    professionalTS.getName()
+                };
+                tableModel.addRow(rowData);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void showAppointmentDetails(AppointmentEntry appointment) {
+        Patient patientTS = new Patient();
+        Professional professionalTS = new Professional();
+        try {
+            patientTS.getUserById(appointment.getPatientID());
+            professionalTS.getUserById(appointment.getProfessionalID());
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
         StringBuilder details = new StringBuilder();
         details.append("Date: ").append(appointment.getDate()).append("\n");
-        details.append("Patient: ").append(appointment.getPatient().getPatientInfo()).append("\n");
+        details.append("Time: ").append(appointment.getStartTime() + " - " + appointment.getEndTime()).append("\n");
+        details.append("Treatment Type: ").append(appointment.getTreatmentType()).append("\n");
         details.append("Description: ").append(appointment.getDescription()).append("\n");
-        details.append("Doctors: ").append(String.join(", ", appointment.getDoctors())).append("\n");
+        details.append("\n").append(patientTS.getFullInfo()).append("\n");
+        details.append("\n").append(professionalTS.getFullInfo()).append("\n");
 
         JOptionPane.showMessageDialog(null, details.toString(), "Appointment Details", JOptionPane.INFORMATION_MESSAGE);
     }

@@ -1,17 +1,23 @@
-package gui;
+package gui.user;
 
 import javax.swing.*;
+
+import gui.ImagePanel;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import user.Patient;
+import user.UserManager;
+
 public class HospitalUserScheduler {
     private JFrame frame;
-    private Hospital hospital;
+    private Patient patient;
     private JTextArea activePatientTextArea;
 
-    public HospitalUserScheduler(Hospital hospital) {
-        this.hospital = hospital;
+    public HospitalUserScheduler(Patient patient) {
+        this.patient = patient;
 
         frame = new JFrame("Hospital Scheduler. User mode.");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -71,7 +77,7 @@ public class HospitalUserScheduler {
 
         // Create active patient label
         activePatientTextArea = new JTextArea();
-        activePatientTextArea.setText(hospital.ActivePatient.getPatientFullInfo());
+        activePatientTextArea.setText(patient.getFullInfo());
         activePatientTextArea.setFont(activePatientTextArea.getFont().deriveFont(Font.PLAIN, 24f));
         activePatientTextArea.setForeground(Color.WHITE);
         activePatientTextArea.setBackground(new Color(0, 0, 0, 0)); // Transparent background
@@ -95,18 +101,18 @@ public class HospitalUserScheduler {
 
     // Method to open "Show All Doctors" window
     private void showAllDoctors() {
-        ShowUserDoctorWindow showDoctorWindow = new ShowUserDoctorWindow(hospital);
+        ShowUserDoctorWindow showDoctorWindow = new ShowUserDoctorWindow(UserManager.getAllProfessionals());
         showDoctorWindow.openWindow();
     }
 
     // Method to open "Show All Appointments" window
     private void showAllAppointments() {
-        ShowUserAppointmentsWindow showAppointmentsWindow = new ShowUserAppointmentsWindow(hospital);
+        ShowUserAppointmentsWindow showAppointmentsWindow = new ShowUserAppointmentsWindow(patient);
     }
 
     // Method to open "Schedule Appointment" window
     private void scheduleAppointment() {
-        AppointmentWindow addNewAppointmentWindow = new AppointmentWindow(hospital);
+        AppointmentWindow addNewAppointmentWindow = new AppointmentWindow(patient, null);
         addNewAppointmentWindow.setModal(true); // Set the dialog as modal
         addNewAppointmentWindow.setVisible(true);
 

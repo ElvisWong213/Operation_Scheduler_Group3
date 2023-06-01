@@ -1,6 +1,14 @@
 package gui;
 
 import javax.swing.*;
+
+import gui.admin.AddNewPatientWindow;
+import gui.admin.HospitalScheduler;
+import gui.basic.Hospital;
+import gui.user.HospitalUserScheduler;
+import user.Professional;
+import user.Patient;
+
 import java.awt.*;
 import java.awt.event.*;
 
@@ -10,8 +18,13 @@ public class AuthenticationWindow {
     private JPasswordField passwordField;
     private Hospital hospital;
 
+    private Patient patient;
+    private Professional professional;
+
     public AuthenticationWindow(Hospital hospital) {
         this.hospital = hospital;
+        this.professional = new Professional();
+        this.patient = new Patient();
         openWindow();
     }
 
@@ -93,7 +106,7 @@ public class AuthenticationWindow {
                 String username = usernameTextField.getText();
                 String password = new String(passwordField.getPassword());
 
-                boolean isAuthenticated = hospital.authenticatePatient(username, password);
+                boolean isAuthenticated = (professional.performLogin(username, password) || patient.performLogin(username, password));
 
                 if (isAuthenticated) {
                     openMainWindow();
@@ -129,7 +142,11 @@ public class AuthenticationWindow {
         }
         else
         {
-            HospitalUserScheduler mainWindow = new HospitalUserScheduler(hospital);
+            if (professional.getLoginState()) {
+
+            } else if (patient.getLoginState()) {
+                HospitalUserScheduler mainWindow = new HospitalUserScheduler(patient);
+            }
         }
     }
 

@@ -1,23 +1,24 @@
-package gui;
+package gui.user;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+
+import dataStructure.MyLinkedList;
+import user.Professional;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 
 public class ShowUserDoctorWindow {
     private JFrame addDoctorFrame;
-    private Hospital hospital;
+    private MyLinkedList<Professional> professionals;
     private JTable doctorsTable;
     private DefaultTableModel tableModel;
 
-    public ShowUserDoctorWindow(Hospital hospital) {
-        this.hospital = hospital;
+    public ShowUserDoctorWindow(MyLinkedList<Professional> professionals) {
+        this.professionals = professionals;
     }
 
     public void openWindow() {
@@ -27,7 +28,7 @@ public class ShowUserDoctorWindow {
         addDoctorFrame.setLocationRelativeTo(null);
 
         // Check if there are doctors in the Hospital object
-        if (hospital.getDoctors().isEmpty()) {
+        if (professionals.isEmpty()) {
             JOptionPane.showMessageDialog(null, "No doctors found. Please add doctors first.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -62,20 +63,24 @@ public class ShowUserDoctorWindow {
         addDoctorFrame.add(bottomPanel, BorderLayout.SOUTH);
 
         // Create the table model
-        tableModel = new DefaultTableModel();
-        tableModel.addColumn("First Name");
-        tableModel.addColumn("Last Name");
-        tableModel.addColumn("Middle Name");
+        tableModel = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        tableModel.addColumn("Name");
         tableModel.addColumn("Specialization");
+        tableModel.addColumn("Work Location");
+        tableModel.addColumn("Email");
 
         // Fill the table model with data from the list of doctors
-        List<Doctor> doctorList = hospital.getDoctors();
-        for (Doctor doctor : doctorList) {
+        for (Professional doctor : professionals) {
             Object[] rowData = {
-                    doctor.getFirstName(),
-                    doctor.getLastName(),
-                    doctor.getMiddleName(),
-                    doctor.getSpecialization()
+                    doctor.getName(),
+                    doctor.getProfession(),
+                    doctor.getWorkLocation(),
+                    doctor.getEmail()
             };
             tableModel.addRow(rowData);
         }
@@ -99,22 +104,21 @@ public class ShowUserDoctorWindow {
                 if (searchValue == null || searchValue.isEmpty()) {
                     return;
                 }
-                List<Doctor> doctorList = hospital.getDoctors();
                 DefaultTableModel searchTableModel = new DefaultTableModel();
                 searchTableModel.addColumn("First Name");
-                searchTableModel.addColumn("Last Name");
-                searchTableModel.addColumn("Middle Name");
                 searchTableModel.addColumn("Specialization");
-                for (Doctor doctor : doctorList) {
-                    if (doctor.getFirstName().equalsIgnoreCase(searchValue) ||
-                            doctor.getLastName().equalsIgnoreCase(searchValue) ||
-                            doctor.getMiddleName().equalsIgnoreCase(searchValue) ||
-                            doctor.getSpecialization().equalsIgnoreCase(searchValue)) {
+                searchTableModel.addColumn("Work Location");
+                searchTableModel.addColumn("Email");
+                for (Professional doctor : professionals) {
+                    if (doctor.getName().equalsIgnoreCase(searchValue) ||
+                            doctor.getProfession().toString().equalsIgnoreCase(searchValue) ||
+                            doctor.getWorkLocation().equalsIgnoreCase(searchValue) ||
+                            doctor.getEmail().equalsIgnoreCase(searchValue)) {
                         Object[] rowData = {
-                                doctor.getFirstName(),
-                                doctor.getLastName(),
-                                doctor.getMiddleName(),
-                                doctor.getSpecialization()
+                                doctor.getName(),
+                                doctor.getProfession(),
+                                doctor.getWorkLocation(),
+                                doctor.getEmail()
                         };
                         searchTableModel.addRow(rowData);
                     }

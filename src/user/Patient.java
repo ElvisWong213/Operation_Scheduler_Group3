@@ -3,7 +3,9 @@ package user;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 
+import appointment.Appointment;
 import database.Database;
 import type.Gender;
 
@@ -125,4 +127,26 @@ public class Patient extends User {
         return patientID != 0;
     }
 
+    public String getFullInfo() {
+        StringBuilder output = new StringBuilder();
+
+        int age = (LocalDate.now().minusYears(dateOfBirth.toLocalDate().getYear())).getYear();
+
+        output.append("Patient Information:\n");
+        output.append("Name: " + name + "\n");
+        output.append("Age: " + age + "\n");
+        output.append("Phone: " + phoneNumber + "\n");
+        output.append("Address: " + address);
+        return output.toString();
+    }
+
+    public String getInfo() {
+        StringBuilder output = new StringBuilder();
+
+        int age = (LocalDate.now().minusYears(dateOfBirth.toLocalDate().getYear())).getYear();
+
+        output.append("Name: " + name + "\n");
+        output.append("Age: " + age + "\n");
+        return output.toString();
+    }
 }

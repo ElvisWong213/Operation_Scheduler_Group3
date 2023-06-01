@@ -1,7 +1,11 @@
-package gui;
+package gui.admin;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
+import gui.basic.Hospital;
+import gui.basic.Patient;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

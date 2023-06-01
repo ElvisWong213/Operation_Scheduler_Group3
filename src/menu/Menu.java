@@ -263,7 +263,7 @@ public class Menu {
                 System.out.println("Cannot select past dates");
                 continue;
             }
-            if (UserManager.availableTime(date, user1).isEmpty() || UserManager.availableTime(date, user2).isEmpty()) {
+            if (UserManager.availableTimeEachUser(date, user1).isEmpty() || UserManager.availableTimeEachUser(date, user2).isEmpty()) {
                 System.out.println("Full booking");
                 continue;
             }
@@ -272,8 +272,8 @@ public class Menu {
     }
 
     private LocalTime chooseTime(LocalDate date, User user1, User user2) {
-        MySet<LocalTime> user1AvailableTime = UserManager.availableTime(date, user1);
-        MySet<LocalTime> user2AvailableTime = UserManager.availableTime(date, user2);
+        MySet<LocalTime> user1AvailableTime = UserManager.availableTimeEachUser(date, user1);
+        MySet<LocalTime> user2AvailableTime = UserManager.availableTimeEachUser(date, user2);
         MySet<LocalTime> availableTime = new MySet<>(user1AvailableTime);
         availableTime.intersection(user2AvailableTime);
         LocalTime[] availableTimeArray = availableTime.toArray(new LocalTime[availableTime.size()]);

@@ -1,10 +1,16 @@
-package gui;
+package gui.admin;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+
+import gui.basic.Appointment;
+import gui.basic.Hospital;
+import gui.user.AppointmentWindow;
+import user.Patient;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,12 +18,12 @@ import java.util.List;
 
 public class ShowAppointmentsWindow {
     private JFrame showAppointmentsFrame;
-    private Hospital hospital;
+    private Patient patient;
     private JTable appointmentsTable;
     private DefaultTableModel tableModel;
 
-    public ShowAppointmentsWindow(Hospital hospital) {
-        this.hospital = hospital;
+    public ShowAppointmentsWindow(Patient patient) {
+        this.patient = patient;
         openWindow();
     }
 
@@ -28,7 +34,7 @@ public class ShowAppointmentsWindow {
         showAppointmentsFrame.setLocationRelativeTo(null);
 
         // Check if there are appointments in the Hospital object
-        if (hospital.getAppointments().isEmpty()) {
+        if (patient.getAppointments().isEmpty()) {
             JOptionPane.showMessageDialog(null, "No appointments found.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -77,7 +83,7 @@ public class ShowAppointmentsWindow {
         tableModel.addColumn("Doctors");
 
         // Fill the table model with data from the list of appointments
-        List<Appointment> appointmentList = hospital.getAppointments();
+        List<Appointment> appointmentList = patient.getAppointments();
         for (Appointment appointment : appointmentList) {
             Object[] rowData = {
                     appointment.getDate(),
@@ -121,7 +127,7 @@ public class ShowAppointmentsWindow {
 
 
 
-                AppointmentWindow addNewAppointmentWindow = new AppointmentWindow(hospital);
+                AppointmentWindow addNewAppointmentWindow = new AppointmentWindow(patient);
                 addNewAppointmentWindow.setModal(true); // Set the dialog as modal
                 addNewAppointmentWindow.setVisible(true);
 
@@ -152,7 +158,7 @@ public class ShowAppointmentsWindow {
                 }
                 int option = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this appointment?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
                 if (option == JOptionPane.YES_OPTION) {
-                    List<Appointment> appointmentList = hospital.getAppointments();
+                    List<Appointment> appointmentList = patient.getAppointments();
                     appointmentList.remove(selectedRow);
                     tableModel.removeRow(selectedRow);
                     JOptionPane.showMessageDialog(null, "Appointment deleted successfully!");
@@ -169,7 +175,7 @@ public class ShowAppointmentsWindow {
                     JOptionPane.showMessageDialog(null, "Please select a row to view details.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                Appointment appointment = hospital.getAppointments().get(selectedRow);
+                Appointment appointment = patient.getAppointments().get(selectedRow);
                 showAppointmentDetails(appointment);
             }
         });
