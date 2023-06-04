@@ -13,7 +13,7 @@ CREATE TABLE user (
 
 CREATE TABLE professional (
     professional_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER UNIQUE,
+    user_id INTEGER UNIQUE NOT NULL,
     name VARCHAR(50),
     profession VARCHAR(50),
     work_location VARCHAR(255),
@@ -22,7 +22,7 @@ CREATE TABLE professional (
 
 CREATE TABLE patient (
     patient_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER UNIQUE,
+    user_id INTEGER UNIQUE NOT NULL,
     name VARCHAR(50),
     gender VARCHAR(10),
     date_of_birth DATE,

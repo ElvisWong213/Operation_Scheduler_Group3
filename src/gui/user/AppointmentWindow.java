@@ -22,39 +22,57 @@ import appointment.Appointment;
 import appointment.AppointmentEntry;
 
 public class AppointmentWindow extends JDialog {
-    private String patientName;
     private MySet<LocalTime> availableTime;
     private Integer[] dayList;
     private Integer[] monthList;
     private Integer[] yearList;
-
+    
     private JComboBox<Professional> doctorComboBox;
     private DefaultComboBoxModel<Professional> doctorComboBoxModel;
 
+    private JComboBox<Patient> patientComboBox;
+    private DefaultComboBoxModel<Patient> patientComboBoxModel;
+    
     private JComboBox<Integer> dayComboBox;
     private DefaultComboBoxModel<Integer> dayComboBoxModel;
     private JComboBox<Integer> monthComboBox;
     private JComboBox<Integer> yearComboBox;
     private JComboBox<LocalTime> timeComboBox;
     private DefaultComboBoxModel<LocalTime> timeComboBoxModel;
-
+    
     private JComboBox<TreatmentType> treatmentTypeComboBox;
+    
+    private JTextArea notesTextArea;
+    private String userName;
+    private Patient patient;
+    private Professional professional;
+    private AppointmentEntry appointmentEntry;
 
-    JTextArea notesTextArea;
-    Patient patient;
-
-    public void openWindow() {
-
-    }
     public AppointmentWindow(Patient patient, AppointmentEntry appointmentEntry) {
         this.patient = patient;
-        this.patientName = patient.getName();
+        this.userName = patient.getName();
+        this.appointmentEntry = appointmentEntry;
+        openWindow();
+    }
 
+    public AppointmentWindow(Professional professional, AppointmentEntry appointmentEntry) {
+        this.professional = professional;
+        this.userName = professional.getName();
+        this.appointmentEntry = appointmentEntry;
+        openWindow();
+    }
+
+    public AppointmentWindow(AppointmentEntry appointmentEntry) {
+        this.appointmentEntry = appointmentEntry;
+        openWindow();
+    }
+
+    public void openWindow() {
         LocalDate now = LocalDate.now();
         this.availableTime = new MySet<>();
-        this.dayList = getMaxDay(now.getMonthValue(), now.getYear());
+        this.dayList = getDayList(now.getMonthValue(), now.getYear());
         this.monthList = getMonthList();
-        this.yearList = getYear(now.getYear());
+        this.yearList = getYearList(now.getYear());
 
         if (appointmentEntry == null) {
             setTitle("Make Appointment");
@@ -66,12 +84,13 @@ public class AppointmentWindow extends JDialog {
         setLocationRelativeTo(null);
 
         // Create labels
-        JLabel nameLabel = new JLabel("Patient: " + patientName);
+        JLabel patientLabel = new JLabel("Patient: ");
+        JLabel nameLabel = new JLabel(userName);
         JLabel dateLabel = new JLabel("Date:");
         JLabel timeLabel = new JLabel("Time:");
         JLabel doctorLabel = new JLabel("Doctor:");
         JLabel notesLabel = new JLabel("Notes:");
-        JLabel treatmentTypeLabel = new JLabel("Treatment Type");
+        JLabel treatmentTypeLabel = new JLabel("Treatment Type: ");
 
         // Create doctor selection combo box
         MyLinkedList<Professional> doctors = UserManager.getAllProfessionals();
@@ -99,6 +118,33 @@ public class AppointmentWindow extends JDialog {
             int index = doctors.indexOf(professionalTS);
             doctorComboBox.setSelectedIndex(index);
         }
+
+        // Create patient selection combo box
+        MyLinkedList<Patient> patients = UserManager.getAllPatients();
+        patientComboBoxModel = new DefaultComboBoxModel<>(patients.toArray(new Patient[0]));
+        patientComboBox = new JComboBox<>(patientComboBoxModel);
+        patientComboBox.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (value instanceof Patient) {
+                    Patient patient = (Patient) value;
+                    setText(patient.getName());
+                }
+                return this;
+            }
+        });
+        if (appointmentEntry != null) {
+            Patient PatientTS = new Patient();
+            try {
+                PatientTS.getUserById(appointmentEntry.getPatientID());
+            } catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            int index = patients.indexOf(PatientTS);
+            patientComboBox.setSelectedIndex(index);
+        }
         
         // Create date selection combo box
         dayComboBoxModel = new DefaultComboBoxModel<>(dayList);
@@ -121,7 +167,13 @@ public class AppointmentWindow extends JDialog {
         }
         
         // Create time selection combo box
-        this.availableTime = UserManager.availableTime(now, patient, (Professional) doctorComboBox.getSelectedItem());
+        if (patient != null) {
+            this.availableTime = UserManager.availableTime(now, (Patient) patientComboBox.getSelectedItem(), professional);
+        } else if (professional != null) {
+            this.availableTime = UserManager.availableTime(now, patient, (Professional) doctorComboBox.getSelectedItem());
+        } else {
+            this.availableTime = UserManager.availableTime(now, (Patient) patientComboBox.getSelectedItem(), (Professional) doctorComboBox.getSelectedItem());
+        }
         if (appointmentEntry != null) {
             this.availableTime.add(appointmentEntry.getStartTime().toLocalTime());
         }
@@ -189,7 +241,7 @@ public class AppointmentWindow extends JDialog {
         gbcLeft.gridx = 0;
         gbcLeft.gridy = 0;
         gbcLeft.anchor = GridBagConstraints.WEST;
-        leftPanel.add(nameLabel, gbcLeft);
+        leftPanel.add(patientLabel, gbcLeft);
         
         gbcLeft.gridy = 1;
         leftPanel.add(doctorLabel, gbcLeft);
@@ -207,10 +259,21 @@ public class AppointmentWindow extends JDialog {
         leftPanel.add(notesLabel, gbcLeft);
 
         gbcLeft.gridx = 1;
-        gbcLeft.gridy = 1;
+        gbcLeft.gridy = 0;
         gbcLeft.fill = GridBagConstraints.HORIZONTAL;
         gbcLeft.gridwidth = 3;
-        leftPanel.add(doctorComboBox, gbcLeft);
+        if (patient != null) {
+            leftPanel.add(nameLabel, gbcLeft);
+        } else {
+            leftPanel.add(patientComboBox, gbcLeft);
+        }
+
+        gbcLeft.gridy = 1;
+        if (professional != null) {
+            leftPanel.add(nameLabel, gbcLeft);
+        } else {
+            leftPanel.add(doctorComboBox, gbcLeft);
+        }
         
         gbcLeft.gridy = 2;
         gbcLeft.gridwidth = 1;
@@ -254,7 +317,7 @@ public class AppointmentWindow extends JDialog {
         bookButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // Handle book appointment button click event
-                if (isAllFieldsNull()) {
+                if (isFieldsNull()) {
                     JOptionPane.showMessageDialog(mainPanel, "Sorry, that day is fully booked. Please choose another day");
                 } else {
                     if (appointmentEntry != null) {
@@ -271,6 +334,13 @@ public class AppointmentWindow extends JDialog {
         cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 dispose(); // Close the window
+            }
+        });
+        
+        patientComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updateTimeComboBox();
             }
         });
 
@@ -310,9 +380,20 @@ public class AppointmentWindow extends JDialog {
         Date date = Date.valueOf(String.format("%04d-%02d-%02d", selectedYear, selectedMonth, selectedDay));
         Time startTime = Time.valueOf((LocalTime) timeComboBoxModel.getSelectedItem());
         Time endTime = Time.valueOf(((LocalTime) timeComboBoxModel.getSelectedItem()).plusHours(1));
-        int professionalID = ((Professional) doctorComboBoxModel.getSelectedItem()).getProfessionalID();
         TreatmentType treatmentType = (TreatmentType) treatmentTypeComboBox.getSelectedItem();
-        AppointmentEntry appointment = new AppointmentEntry(date, startTime, endTime, treatmentType, notesTextArea.getText(), professionalID, patient.getPatientID());
+        int professionalID = 0;
+        int patientID = 0;
+        if (patient != null) {
+            professionalID = ((Professional) doctorComboBoxModel.getSelectedItem()).getProfessionalID();
+            patientID = patient.getPatientID();
+        } else if (professional != null) {
+            professionalID = professional.getProfessionalID();
+            patientID = ((Patient) patientComboBoxModel.getSelectedItem()).getPatientID(); 
+        } else {
+            professionalID = ((Professional) doctorComboBoxModel.getSelectedItem()).getProfessionalID();
+            patientID = ((Patient) patientComboBoxModel.getSelectedItem()).getPatientID(); 
+        }
+        AppointmentEntry appointment = new AppointmentEntry(date, startTime, endTime, treatmentType, notesTextArea.getText(), professionalID, patientID);
 
         Appointment.bookAppointment(appointment);
     }
@@ -325,14 +406,25 @@ public class AppointmentWindow extends JDialog {
         Date date = Date.valueOf(String.format("%04d-%02d-%02d", selectedYear, selectedMonth, selectedDay));
         Time startTime = Time.valueOf((LocalTime) timeComboBoxModel.getSelectedItem());
         Time endTime = Time.valueOf(((LocalTime) timeComboBoxModel.getSelectedItem()).plusHours(1));
-        int professionalID = ((Professional) doctorComboBoxModel.getSelectedItem()).getProfessionalID();
         TreatmentType treatmentType = (TreatmentType) treatmentTypeComboBox.getSelectedItem();
-        AppointmentEntry appointment = new AppointmentEntry(id, date, startTime, endTime, treatmentType, notesTextArea.getText(), professionalID, patient.getPatientID());
+        int professionalID = 0;
+        int patientID = 0;
+        if (patient != null) {
+            professionalID = ((Professional) doctorComboBoxModel.getSelectedItem()).getProfessionalID();
+            patientID = patient.getPatientID();
+        } else if (professional != null) {
+            professionalID = professional.getProfessionalID();
+            patientID = ((Patient) patientComboBoxModel.getSelectedItem()).getPatientID(); 
+        } else {
+            professionalID = ((Professional) doctorComboBoxModel.getSelectedItem()).getProfessionalID();
+            patientID = ((Patient) patientComboBoxModel.getSelectedItem()).getPatientID(); 
+        }
+        AppointmentEntry appointment = new AppointmentEntry(id, date, startTime, endTime, treatmentType, notesTextArea.getText(), professionalID, patientID);
 
         Appointment.editAppointment(appointment);
     }
 
-    private Integer[] getMaxDay(int month, int year) {
+    private Integer[] getDayList(int month, int year) {
         int[] numberOfDay = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
         int maxDay = numberOfDay[month - 1];
         if (year % 4 == 0 && month == 2) {
@@ -350,10 +442,10 @@ public class AppointmentWindow extends JDialog {
         return month;
     }
     
-    private Integer[] getYear(int year) {
+    private Integer[] getYearList(int year) {
         int size = 20;
         Integer[] yearList = new Integer[size];
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < size; i++) {
             yearList[i] = year + i;
         }
         return yearList;
@@ -361,7 +453,7 @@ public class AppointmentWindow extends JDialog {
 
     private void updateDayComboBox() {
         Integer selectedDay = (Integer) dayComboBoxModel.getSelectedItem();
-        dayList = getMaxDay((int) monthComboBox.getSelectedItem(), (int) yearComboBox.getSelectedItem());
+        dayList = getDayList((int) monthComboBox.getSelectedItem(), (int) yearComboBox.getSelectedItem());
         dayComboBoxModel.removeAllElements();
         for (Integer element : dayList) {
             dayComboBoxModel.addElement(element);
@@ -405,7 +497,7 @@ public class AppointmentWindow extends JDialog {
         }
     }
 
-    private boolean isAllFieldsNull() {
+    private boolean isFieldsNull() {
         if (doctorComboBoxModel.getSelectedItem() == null) {
             return true;
         }

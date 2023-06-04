@@ -4,7 +4,6 @@ import javax.swing.*;
 
 import gui.admin.AddNewPatientWindow;
 import gui.admin.HospitalScheduler;
-import gui.basic.Hospital;
 import gui.user.HospitalUserScheduler;
 import user.Professional;
 import user.Patient;
@@ -16,15 +15,15 @@ public class AuthenticationWindow {
     private JFrame authFrame;
     private JTextField usernameTextField;
     private JPasswordField passwordField;
-    private Hospital hospital;
 
     private Patient patient;
     private Professional professional;
+    private boolean isAdmin;
 
-    public AuthenticationWindow(Hospital hospital) {
-        this.hospital = hospital;
+    public AuthenticationWindow() {
         this.professional = new Professional();
         this.patient = new Patient();
+        this.isAdmin = false;
         openWindow();
     }
 
@@ -108,6 +107,11 @@ public class AuthenticationWindow {
 
                 boolean isAuthenticated = (professional.performLogin(username, password) || patient.performLogin(username, password));
 
+                if (username.equals("admin") && password.equals("admin")) {
+                    isAuthenticated = true;
+                    isAdmin = true;
+                }
+
                 if (isAuthenticated) {
                     openMainWindow();
                     authFrame.dispose(); // Close the authentication window
@@ -136,9 +140,9 @@ public class AuthenticationWindow {
     }
 
     private void openMainWindow() {
-        if (hospital.getIsAdmin())
+        if (isAdmin)
         {
-            HospitalScheduler mainWindow = new HospitalScheduler(hospital);
+            HospitalScheduler mainWindow = new HospitalScheduler();
         }
         else
         {
@@ -151,7 +155,7 @@ public class AuthenticationWindow {
     }
 
     private void openNewPatientWindow() {
-        AddNewPatientWindow newPatientWindow = new AddNewPatientWindow(hospital);
+        AddNewPatientWindow newPatientWindow = new AddNewPatientWindow();
         newPatientWindow.setVisible(true);
     }
 }

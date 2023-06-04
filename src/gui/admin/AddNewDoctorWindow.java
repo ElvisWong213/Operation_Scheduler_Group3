@@ -3,29 +3,30 @@ package gui.admin;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-import gui.basic.Doctor;
-import gui.basic.Hospital;
+import type.Profession;
+import user.Professional;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
 public class AddNewDoctorWindow extends JDialog  {
-    private Hospital hospital;
-
-    private JLabel firstNameLabel;
-    private JLabel lastNameLabel;
-    private JLabel middleNameLabel;
+    private JLabel nameLabel;
+    private JLabel workLocationLabel;
+    private JLabel emailLabel;
+    private JLabel passwordLabel;
     private JLabel specializationLabel;
 
-    private JTextField firstNameTextField;
-    private JTextField lastNameTextField;
-    private JTextField middleNameTextField;
-    private JComboBox<String> specializationComboBox;
-    Doctor newDoctor;
+    private JTextField nameTextField;
+    private JTextField workLocationTextField;
+    private JTextField emailTextField;
+    private JPasswordField passwordField;
+    private JComboBox<Profession> specializationComboBox;
 
-    public AddNewDoctorWindow(Hospital hospital) {
-        this.hospital = hospital;
+    private Professional professional;
+
+    public AddNewDoctorWindow() {
         setTitle("Add New Doctor");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(400, 300);
@@ -33,47 +34,74 @@ public class AddNewDoctorWindow extends JDialog  {
 
         createComponents();
         createLayout();
+    }
 
-        newDoctor = null;
+    public AddNewDoctorWindow(Professional professional) {
+        this.professional = professional;
+
+        setTitle("Edit Doctor");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setSize(400, 300);
+        setLocationRelativeTo(null);
+
+        createComponents();
+        createLayout();
     }
 
     private void createComponents() {
-        firstNameLabel = new JLabel("First Name:");
-        lastNameLabel = new JLabel("Last Name:");
-        middleNameLabel = new JLabel("Middle Name:");
+        nameLabel = new JLabel("Name:");
+        workLocationLabel = new JLabel("Work Location:");
+        emailLabel = new JLabel("Email:");
+        passwordLabel = new JLabel("Password:");
         specializationLabel = new JLabel("Specialization:");
 
-        firstNameTextField = new JTextField();
-        lastNameTextField = new JTextField();
-        middleNameTextField = new JTextField();
+        nameTextField = new JTextField();
+        workLocationTextField = new JTextField();
+        emailTextField = new JTextField();
+        passwordField = new JPasswordField();
 
         // Set preferred height for text fields based on font size
-        Font textFieldFont = firstNameTextField.getFont();
+        Font textFieldFont = nameTextField.getFont();
         int preferredHeight = textFieldFont.getSize() + 8; // 8 is an arbitrary value for padding
-        Dimension textFieldDimension = new Dimension(firstNameTextField.getPreferredSize().width, preferredHeight);
-        firstNameTextField.setPreferredSize(textFieldDimension);
-        lastNameTextField.setPreferredSize(textFieldDimension);
-        middleNameTextField.setPreferredSize(textFieldDimension);
+        Dimension textFieldDimension = new Dimension(nameTextField.getPreferredSize().width, preferredHeight);
+        nameTextField.setPreferredSize(textFieldDimension);
+        workLocationTextField.setPreferredSize(textFieldDimension);
+        emailTextField.setPreferredSize(textFieldDimension);
+        passwordField.setPreferredSize(textFieldDimension);
 
-        String[] specializations = {"Cardiology", "Dermatology", "Endocrinology", "Gastroenterology", "Neurology",
-                "Ophthalmology", "Orthopedics", "Pediatrics", "Psychiatry", "Urology"};
+        Profession[] specializations = Profession.values();
         specializationComboBox = new JComboBox<>(specializations);
+
+        if (professional != null) {
+            nameTextField.setText(professional.getName());
+            workLocationTextField.setText(professional.getWorkLocation());
+            emailTextField.setText(professional.getEmail());
+            passwordField.setText(professional.getPassword());
+            specializationComboBox.setSelectedItem(professional.getProfession());
+        }
     }
 
     private void createLayout() {
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new GridLayout(0, 2, 10, 10));
 
-        mainPanel.add(createPaddedPanel(firstNameLabel, 20));
-        mainPanel.add(firstNameTextField);
-        mainPanel.add(createPaddedPanel(lastNameLabel, 20));
-        mainPanel.add(lastNameTextField);
-        mainPanel.add(createPaddedPanel(middleNameLabel, 20));
-        mainPanel.add(middleNameTextField);
+        mainPanel.add(createPaddedPanel(emailLabel, 20));
+        mainPanel.add(emailTextField);
+        mainPanel.add(createPaddedPanel(passwordLabel, 20));
+        mainPanel.add(passwordField);
+        mainPanel.add(createPaddedPanel(nameLabel, 20));
+        mainPanel.add(nameTextField);
         mainPanel.add(createPaddedPanel(specializationLabel, 20));
         mainPanel.add(specializationComboBox);
+        mainPanel.add(createPaddedPanel(workLocationLabel, 20));
+        mainPanel.add(workLocationTextField);
 
-        JButton addButton = new JButton("Add");
+        JButton addButton = new JButton();
+        if (professional != null) {
+            addButton.setText("Save");
+        } else {
+            addButton.setText("Add");
+        }
         JButton cancelButton = new JButton("Cancel");
 
         JPanel bottomPanel = new JPanel();
@@ -88,22 +116,43 @@ public class AddNewDoctorWindow extends JDialog  {
 
         addButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String firstName = firstNameTextField.getText();
-                String lastName = lastNameTextField.getText();
-                String middleName = middleNameTextField.getText();
-                String specialization = (String) specializationComboBox.getSelectedItem();
+                String name = nameTextField.getText();
+                String workLocation = workLocationTextField.getText();
+                String email = emailTextField.getText();
+                Profession specialization = (Profession) specializationComboBox.getSelectedItem();
+                String password = new String(passwordField.getPassword());
 
-                newDoctor = new Doctor(firstName, lastName, middleName, specialization);
-                hospital.addDoctor(newDoctor);
+                if (isFieldNull()) {
+                    JOptionPane.showMessageDialog(AddNewDoctorWindow.this, "Please fill in all the fields");
+                } else {
+                    if (professional != null) {
+                        professional.setName(name);
+                        professional.setWorkLocation(workLocation);
+                        professional.setEmail(email);
+                        professional.setProfession(specialization);
+                        professional.setPassword(password);
+                        try {
+                            professional.editUser();
+                            JOptionPane.showMessageDialog(AddNewDoctorWindow.this, "Doctor data edited successfully!");
+                            setVisible(false);
+                            dispose();
+                        } catch (SQLException e1) {
+                            JOptionPane.showMessageDialog(AddNewDoctorWindow.this, "Unable to save!");
+                        }
 
-                JOptionPane.showMessageDialog(AddNewDoctorWindow.this, "Doctor added successfully!");
+                    } else {
+                        Professional newProfessional = new Professional(email, password, name, specialization, workLocation);
+                        try {
+                            newProfessional.addUser();
+                            JOptionPane.showMessageDialog(AddNewDoctorWindow.this, "Doctor added successfully!");
+                            setVisible(false);
+                            dispose();
+                        } catch (SQLException e1) {
+                            JOptionPane.showMessageDialog(AddNewDoctorWindow.this, "Email already exist");
+                        }
+                    }
+                }
 
-                firstNameTextField.setText("");
-                lastNameTextField.setText("");
-                middleNameTextField.setText("");
-                specializationComboBox.setSelectedIndex(0);
-
-                setVisible(false);
 
             }
         });
@@ -123,8 +172,25 @@ public class AddNewDoctorWindow extends JDialog  {
         return panel;
     }
 
+    private boolean isFieldNull() {
+        String name = nameTextField.getText();
+        String workLocation = workLocationTextField.getText();
+        String email = emailTextField.getText();
+        String password = new String(passwordField.getPassword());
 
-    public Doctor getNewDoctor() {
-        return  newDoctor;
+        if (name.isEmpty() || name.isBlank()) {
+            return true;
+        }
+        if (workLocation.isEmpty() || workLocation.isBlank()) {
+            return true;
+        }
+        if (email.isEmpty() || email.isBlank()) {
+            return true;
+        }
+        if (password.isEmpty() || password.isBlank()) {
+            return true;
+        }
+        return false;
+        
     }
 }

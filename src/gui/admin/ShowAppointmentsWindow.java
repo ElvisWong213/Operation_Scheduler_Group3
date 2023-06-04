@@ -6,8 +6,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
-import gui.basic.Appointment;
-import gui.basic.Hospital;
+import appointment.Appointment;
 import gui.user.AppointmentWindow;
 import user.Patient;
 
@@ -18,12 +17,14 @@ import java.util.List;
 
 public class ShowAppointmentsWindow {
     private JFrame showAppointmentsFrame;
-    private Patient patient;
     private JTable appointmentsTable;
     private DefaultTableModel tableModel;
 
-    public ShowAppointmentsWindow(Patient patient) {
-        this.patient = patient;
+    private Appointment appointment;
+
+    public ShowAppointmentsWindow() {
+        this.appointment = new Appointment();
+        this.appointment.getAllAppointments();
         openWindow();
     }
 
@@ -34,7 +35,7 @@ public class ShowAppointmentsWindow {
         showAppointmentsFrame.setLocationRelativeTo(null);
 
         // Check if there are appointments in the Hospital object
-        if (patient.getAppointments().isEmpty()) {
+        if (appointment.getAppointments().isEmpty()) {
             JOptionPane.showMessageDialog(null, "No appointments found.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }

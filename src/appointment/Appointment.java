@@ -22,48 +22,27 @@ public class Appointment {
     }
 
     public void searchAppointmentsInWeek(LocalDate inputDate, int professionalID, int patientID) {
-        appointments.clear();
-        Database db = null;
-        try {
-            Date startDate = Date.valueOf(inputDate);
-            Date endDate = Date.valueOf(inputDate.plusDays(7));
-            db = new Database();
-            String query = String.format("SELECT * FROM appointment WHERE (professional_id = %d OR patient_id = %d) AND date >= '%s' AND date <= '%s' ORDER BY date ASC, start_time ASC;", professionalID, patientID, startDate, endDate);
-            ResultSet rs = db.executeQuery(query);
-            while (rs.next()) {
-                int id = rs.getInt("appointment_id");
-                Date date = Date.valueOf(rs.getString("date"));
-                Time startTime = Time.valueOf(rs.getString("start_time"));
-                Time endTime = Time.valueOf(rs.getString("end_time"));
-                TreatmentType treatmentType = TreatmentType.valueOf(rs.getString("treatment_type"));
-                String description = rs.getString("description");
-                int proID = rs.getInt("professional_id");
-                int patID = rs.getInt("patient_id");
-
-                AppointmentEntry appointmentEntry = new AppointmentEntry(id, date, startTime, endTime, treatmentType, description, proID, patID);
-                appointments.add(appointmentEntry);
-            }
-        } catch (SQLException e) {
-            System.out.println("Fail connect to database");
-            e.printStackTrace();
-        } finally {
-            if (db != null) {
-                try {
-                    db.close();
-                } catch (SQLException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-        }
+        Date startDate = Date.valueOf(inputDate);
+        Date endDate = Date.valueOf(inputDate.plusDays(7));
+        String query = String.format("SELECT * FROM appointment WHERE (professional_id = %d OR patient_id = %d) AND date >= '%s' AND date <= '%s' ORDER BY date ASC, start_time ASC;", professionalID, patientID, startDate, endDate);
+        loadAppointments(query);
     }
 
-    public void getAllAppointments(int professionalID, int patientID) {
+    public void getAllAppointmentsByID(int professionalID, int patientID) {
+        String query = String.format("SELECT * FROM appointment WHERE (professional_id = %d OR patient_id = %d) ORDER BY date ASC, start_time ASC;", professionalID, patientID);
+        loadAppointments(query);
+    }
+
+    public void getAllAppointments() {
+        String query = "SELECT * FROM appointment ORDER BY date ASC, start_time ASC;";
+        loadAppointments(query);
+    }
+
+    private void loadAppointments(String query) {
         appointments.clear();
         Database db = null;
         try {
             db = new Database();
-            String query = String.format("SELECT * FROM appointment WHERE (professional_id = %d OR patient_id = %d) ORDER BY date ASC, start_time ASC;", professionalID, patientID);
             ResultSet rs = db.executeQuery(query);
             while (rs.next()) {
                 int id = rs.getInt("appointment_id");

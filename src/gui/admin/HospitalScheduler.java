@@ -3,7 +3,8 @@ package gui.admin;
 import javax.swing.*;
 
 import gui.ImagePanel;
-import gui.basic.Hospital;
+import gui.user.AppointmentWindow;
+import gui.user.ShowUserAppointmentsWindow;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -11,12 +12,8 @@ import java.awt.event.ActionListener;
 
 public class HospitalScheduler {
     private JFrame frame;
-    private Hospital hospital;
 
-
-    public HospitalScheduler(Hospital hospital) {
-        this.hospital = hospital;
-
+    public HospitalScheduler() {
         frame = new JFrame("Hospital Scheduler. Admin mode.");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -89,6 +86,15 @@ public class HospitalScheduler {
         });
         appointmentsMenu.add(showAllAppointmentsMenuItem);
 
+        // Create menu item "Schedule Appointment"
+        JMenuItem scheduleAppointmentMenuItem = new JMenuItem("Schedule Appointment");
+        scheduleAppointmentMenuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                scheduleAppointment();
+            }
+        });
+        appointmentsMenu.add(scheduleAppointmentMenuItem);
+
 
 
         ImagePanel imagePanel = new ImagePanel("src/gui/bcg.jpg");
@@ -103,13 +109,12 @@ public class HospitalScheduler {
 
     // Method to open "Show All Doctors" window
     private void showAllDoctors() {
-        ShowDoctorWindow showDoctorWindow = new ShowDoctorWindow(hospital);
-        showDoctorWindow.openWindow();
+        ShowDoctorWindow showDoctorWindow = new ShowDoctorWindow();
     }
 
     // Method to open "Add New Doctor" window
     private void addNewDoctor() {
-        AddNewDoctorWindow addNewDoctorWindow = new AddNewDoctorWindow(hospital);
+        AddNewDoctorWindow addNewDoctorWindow = new AddNewDoctorWindow();
 
         addNewDoctorWindow.setModal(true); // Set the dialog as modal
         addNewDoctorWindow.setVisible(true);
@@ -119,28 +124,32 @@ public class HospitalScheduler {
 
     // Method to open "Show All Patients" window
     private void showAllPatients() {
-        ShowPatientsWindow showPatientsWindow = new ShowPatientsWindow(hospital);
-        showPatientsWindow.openWindow();
+        ShowPatientsWindow showPatientsWindow = new ShowPatientsWindow();
     }
 
     // Method to open "Add New Patient" window
     private void addNewPatient() {
-        AddNewPatientWindow addPatientWindow = new AddNewPatientWindow(hospital);
+        AddNewPatientWindow addPatientWindow = new AddNewPatientWindow();
 
         addPatientWindow.setModal(true); // Set the dialog as modal
         addPatientWindow.setVisible(true);
-
-        addPatientWindow.dispose();
 
     }
 
     // Method to open "Show All Appointments" window
     private void showAllAppointments() {
-        ShowAppointmentsWindow showAppointmentsWindow = new ShowAppointmentsWindow(hospital);
+        ShowUserAppointmentsWindow showAppointmentsWindow = new ShowUserAppointmentsWindow();
 
     }
 
 
+    // Method to open "Schedule Appointment" window
+    private void scheduleAppointment() {
+        AppointmentWindow addNewAppointmentWindow = new AppointmentWindow(null);
+        addNewAppointmentWindow.setModal(true); // Set the dialog as modal
+        addNewAppointmentWindow.setVisible(true);
 
+        addNewAppointmentWindow.dispose();
+    }
 
 }

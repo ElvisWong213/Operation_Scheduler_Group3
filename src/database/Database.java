@@ -1,4 +1,7 @@
 package database;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -12,6 +15,8 @@ public class Database {
     public Database() throws SQLException {
         this.connection = DriverManager.getConnection(url);
         this.connection.setAutoCommit(false);
+        Statement stmt = connection.createStatement();
+        stmt.execute("PRAGMA foreign_keys = ON;");
     }
 
     public ResultSet executeQuery(String query) throws SQLException {

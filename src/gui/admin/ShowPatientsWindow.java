@@ -6,22 +6,27 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
-import gui.basic.Hospital;
-import gui.basic.Patient;
+import dataStructure.MyLinkedList;
+import user.Patient;
+import user.UserManager;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 
 public class ShowPatientsWindow {
     private JFrame showPatientsFrame;
-    private Hospital hospital;
     private JTable patientsTable;
     private DefaultTableModel tableModel;
 
-    public ShowPatientsWindow(Hospital hospital) {
-        this.hospital = hospital;
+    private MyLinkedList<Patient> patients;
+
+    public ShowPatientsWindow() {
+        this.patients = UserManager.getAllPatients();
+        openWindow();
     }
 
     public void openWindow() {
@@ -31,7 +36,7 @@ public class ShowPatientsWindow {
         showPatientsFrame.setLocationRelativeTo(null);
 
         // Check if there are patients in the Hospital object
-        if (hospital.getPatients().isEmpty()) {
+        if (patients.isEmpty()) {
             JOptionPane.showMessageDialog(null, "No patients found. Please add patients first.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -41,9 +46,9 @@ public class ShowPatientsWindow {
         JScrollPane scrollPane = new JScrollPane(patientsTable);
 
         // Create buttons
-        JButton allPatientsButton = new JButton("All Patients");
         JButton addButton = new JButton("Add");
         JButton deleteButton = new JButton("Delete");
+        JButton editButton = new JButton("Edit");
         JButton searchButton = new JButton("Search");
         JButton exitButton = new JButton("Exit");
 
@@ -52,16 +57,16 @@ public class ShowPatientsWindow {
         bottomPanel.setLayout(new GridLayout(1, 5, 10, 0)); // 1 row, 5 columns, horizontal and vertical gaps
 
         // Add empty borders to the buttons to create spacing
-        allPatientsButton.setBorder(new EmptyBorder(10, 10, 10, 10));
         addButton.setBorder(new EmptyBorder(10, 10, 10, 10));
         deleteButton.setBorder(new EmptyBorder(10, 10, 10, 10));
+        editButton.setBorder(new EmptyBorder(10, 10, 10, 10));
         searchButton.setBorder(new EmptyBorder(10, 10, 10, 10));
         exitButton.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         // Add buttons to the panel
-        bottomPanel.add(allPatientsButton);
         bottomPanel.add(addButton);
         bottomPanel.add(deleteButton);
+        bottomPanel.add(editButton);
         bottomPanel.add(searchButton);
         bottomPanel.add(exitButton);
 
@@ -73,28 +78,29 @@ public class ShowPatientsWindow {
         showPatientsFrame.add(bottomPanel, BorderLayout.SOUTH);
 
         // Create the table model
-        tableModel = new DefaultTableModel();
-        tableModel.addColumn("First Name");
-        tableModel.addColumn("Last Name");
+        tableModel = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        tableModel.addColumn("ID");
+        tableModel.addColumn("Name");
+        tableModel.addColumn("Gender");
         tableModel.addColumn("Age");
-        tableModel.addColumn("Weight");
-        tableModel.addColumn("Height");
         tableModel.addColumn("Phone");
         tableModel.addColumn("Address");
-        tableModel.addColumn("Notes");
 
         // Fill the table model with data from the list of patients
-        List<Patient> patientList = hospital.getPatients();
-        for (Patient patient : patientList) {
+        for (Patient patient : patients) {
+            int age = LocalDate.now().minusYears(patient.getDateOfBirth().toLocalDate().getYear()).getYear();
             Object[] rowData = {
-                    patient.getFirstName(),
-                    patient.getLastName(),
-                    patient.getAge(),
-                    patient.getWeight(),
-                    patient.getHeight(),
-                    patient.getPhone(),
-                    patient.getAddress(),
-                    patient.getNotes()
+                    patient.getPatientID(),
+                    patient.getName(),
+                    patient.getGender(),
+                    age,
+                    patient.getPhoneNumber(),
+                    patient.getAddress()
             };
             tableModel.addRow(rowData);
         }
@@ -117,10 +123,20 @@ public class ShowPatientsWindow {
         });
 
         // Add action listener for All Patients button
-        allPatientsButton.addActionListener(new ActionListener() {
+        editButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                patientsTable.setModel(tableModel); // Set the table model with all patients data
+                int selectedRow = patientsTable.getSelectedRow();
+                if (selectedRow == -1) {
+                    JOptionPane.showMessageDialog(null, "Please select a row to delete.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                AddNewPatientWindow editPatientWindow = new AddNewPatientWindow(patients.get(selectedRow));
+                editPatientWindow.setModal(true);
+                editPatientWindow.setVisible(true);
+
+                refreshTable();
             }
         });
 
@@ -128,28 +144,11 @@ public class ShowPatientsWindow {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Show the form for adding a new patient
-                AddNewPatientWindow addNewPatientWindow = new AddNewPatientWindow(hospital);
+                AddNewPatientWindow addNewPatientWindow = new AddNewPatientWindow();
                 addNewPatientWindow.setModal(true); // Set the dialog as modal
                 addNewPatientWindow.setVisible(true);
 
-                Patient newPatient = addNewPatientWindow.getNewPatient();
-                if (newPatient != null) {
-                    // Update the table model with the new data
-                    Object[] rowData = {
-                            newPatient.getFirstName(),
-                            newPatient.getLastName(),
-                            newPatient.getAge(),
-                            newPatient.getWeight(),
-                            newPatient.getHeight(),
-                            newPatient.getPhone(),
-                            newPatient.getAddress(),
-                            newPatient.getNotes()
-                    };
-                    tableModel.addRow(rowData);
-
-                }
-                addNewPatientWindow.dispose();
-
+                refreshTable();
             }
         });
 
@@ -164,11 +163,15 @@ public class ShowPatientsWindow {
                 }
                 int option = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this patient?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
                 if (option == JOptionPane.YES_OPTION) {
-                    List<Patient> patientList = hospital.getPatients();
-                    patientList.remove(selectedRow);
-                    tableModel.removeRow(selectedRow);
-                    JOptionPane.showMessageDialog(null, "Patient deleted successfully!");
+                    Patient patient = new Patient();
+                    try {
+                        patient.removeUser(patients.get(selectedRow).getPatientID());
+                        JOptionPane.showMessageDialog(null, "Patient deleted successfully!");
+                    } catch (SQLException e1) {
+                        JOptionPane.showMessageDialog(null, "Unable to delete patient.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
+                refreshTable();
             }
         });
 
@@ -226,5 +229,23 @@ public class ShowPatientsWindow {
 
         // Display the window
         showPatientsFrame.setVisible(true);
+    }
+
+    private void refreshTable() {
+        patients = UserManager.getAllPatients();
+
+        tableModel.setRowCount(0);
+        for (Patient patient : patients) {
+            int age = LocalDate.now().minusYears(patient.getDateOfBirth().toLocalDate().getYear()).getYear();
+            Object[] rowData = {
+                    patient.getPatientID(),
+                    patient.getName(),
+                    patient.getGender(),
+                    age,
+                    patient.getPhoneNumber(),
+                    patient.getAddress()
+            };
+            tableModel.addRow(rowData);
+        }
     }
 }

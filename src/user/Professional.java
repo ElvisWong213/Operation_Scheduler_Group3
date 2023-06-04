@@ -20,6 +20,13 @@ public class Professional extends User {
         this.workLocation = null;
     }
 
+    public Professional(String email, String password, String name, Profession profession, String workLocation) {
+        super(email, password);
+        this.name = name;
+        this.profession = profession;
+        this.workLocation = workLocation;
+    }
+
     @Override
     public String getName() {
         return name;
@@ -100,7 +107,6 @@ public class Professional extends User {
         return professionalID != 0;
     }
 
-
     public String getFullInfo() {
         StringBuilder output = new StringBuilder();
 
@@ -123,5 +129,34 @@ public class Professional extends User {
         return false;
     }
 
-    
+    @Override
+    public void addUser() throws SQLException {
+        super.addUser();
+        getUserByEmailPassword(email, password);
+        Database db = new Database();
+        String query = String.format(
+                "INSERT INTO professional (user_id, name, profession, work_location) VALUES ('%s', '%s', '%s', '%s');",
+                userID, name, profession, workLocation);
+        db.executeUpdate(query);
+    }
+
+    @Override
+    public void removeUser(int id) throws SQLException {
+        getUserById(id);
+        Database db = new Database();
+        String query = String.format("DELETE FROM professional WHERE professional_id = %d;", professionalID);
+        db.executeUpdate(query);
+        super.removeUser(userID);
+    }
+
+    @Override
+    public void editUser() throws SQLException {
+        Database db = new Database();
+        String query = String.format(
+                "UPDATE professional SET name = '%s', profession = '%s', work_location = '%s' WHERE professional_id = %d;",
+                name, profession, workLocation, professionalID);
+        db.executeUpdate(query);
+        super.editUser();
+    }
+
 }

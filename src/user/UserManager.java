@@ -20,15 +20,13 @@ public class UserManager {
                 professionals.add(professional);
             }
         } catch (SQLException e) {
-            // TODO: handle exception
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         } finally {
             if (db != null) {
                 try {
                     db.close();
                 } catch (SQLException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    System.out.println("Database could not close");
                 }
             }
         }
@@ -104,5 +102,4 @@ public class UserManager {
         }
         return times;
     }
-
 }

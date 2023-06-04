@@ -15,11 +15,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
-import java.util.List;
 
 public class ShowUserAppointmentsWindow {
     private JFrame showAppointmentsFrame;
     private Patient patient;
+    private Professional professional;
     private Appointment appointment;
     private JTable appointmentsTable;
     private DefaultTableModel tableModel;
@@ -27,12 +27,31 @@ public class ShowUserAppointmentsWindow {
     public ShowUserAppointmentsWindow(Patient patient) {
         this.patient = patient;
         this.appointment = new Appointment();
-        this.appointment.getAllAppointments(0, patient.getPatientID());
+        this.appointment.getAllAppointmentsByID(0, patient.getPatientID());
+        openWindow();
+    }
+
+    public ShowUserAppointmentsWindow(Professional professional) {
+        this.professional = professional;
+        this.appointment = new Appointment();
+        this.appointment.getAllAppointmentsByID(professional.getProfessionalID(), 0);
+        openWindow();
+    }
+
+    public ShowUserAppointmentsWindow() {
+        this.appointment = new Appointment();
+        this.appointment.getAllAppointments();
         openWindow();
     }
 
     public void openWindow() {
-        showAppointmentsFrame = new JFrame("Appointments " + patient.getInfo());
+        if (patient != null) {
+            showAppointmentsFrame = new JFrame("Appointments " + patient.getName());
+        } else if (professional != null) {
+            showAppointmentsFrame = new JFrame("Appointments " + professional.getName());
+        } else {
+            showAppointmentsFrame = new JFrame("Appointments");
+        }
         showAppointmentsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         showAppointmentsFrame.setSize(800, 500);
         showAppointmentsFrame.setLocationRelativeTo(null);
@@ -128,11 +147,19 @@ public class ShowUserAppointmentsWindow {
                     return;
                 }
 
-                AppointmentWindow addNewAppointmentWindow = new AppointmentWindow(patient, appointment.getAppointments().get(selectedRow));
+                AppointmentWindow addNewAppointmentWindow = null;
+                if (patient != null) {
+                    addNewAppointmentWindow = new AppointmentWindow(patient, appointment.getAppointments().get(selectedRow));
+                } else if (professional != null) {
+                    addNewAppointmentWindow = new AppointmentWindow(professional, appointment.getAppointments().get(selectedRow));
+                } else {
+                    addNewAppointmentWindow = new AppointmentWindow(appointment.getAppointments().get(selectedRow));
+                }
                 addNewAppointmentWindow.setModal(true); // Set the dialog as modal
                 addNewAppointmentWindow.setVisible(true);
 
-                appointment.getAllAppointments(0, patient.getPatientID());
+                
+                fetchAppointment();
                 initialiseTable();
 
             }
@@ -142,11 +169,19 @@ public class ShowUserAppointmentsWindow {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Show the form for adding a new appointment
-                AppointmentWindow addNewAppointmentWindow = new AppointmentWindow(patient, null);
+                AppointmentWindow addNewAppointmentWindow = null;
+                
+                if (patient != null) {
+                    addNewAppointmentWindow = new AppointmentWindow(patient, null);
+                } else if (professional != null) {
+                    addNewAppointmentWindow = new AppointmentWindow(professional, null);
+                } else {
+                    addNewAppointmentWindow = new AppointmentWindow(null);
+                }
                 addNewAppointmentWindow.setModal(true); // Set the dialog as modal
                 addNewAppointmentWindow.setVisible(true);
         
-                appointment.getAllAppointments(0, patient.getPatientID());
+                fetchAppointment();
                 initialiseTable();
             }
         });
@@ -165,7 +200,7 @@ public class ShowUserAppointmentsWindow {
                         "Confirm Delete", JOptionPane.YES_NO_OPTION);
                 if (option == JOptionPane.YES_OPTION) {
                     Appointment.removeAppointment(appointment.getAppointments().get(selectedRow));
-                    appointment.getAllAppointments(0, patient.getPatientID());
+                    fetchAppointment();
                     initialiseTable();
                     JOptionPane.showMessageDialog(null, "Appointment deleted successfully!");
                 }
@@ -221,6 +256,16 @@ public class ShowUserAppointmentsWindow {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void fetchAppointment() {
+        if (patient != null) {
+            appointment.getAllAppointmentsByID(0, patient.getPatientID());
+        } else if (professional != null) {
+            appointment.getAllAppointmentsByID(professional.getProfessionalID(), 0);
+        } else {
+            appointment.getAllAppointments();
         }
     }
 
