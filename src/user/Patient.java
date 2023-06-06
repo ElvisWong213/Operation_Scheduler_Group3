@@ -3,9 +3,10 @@ package user;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 
-import database.Database;
 import type.Gender;
+import database.Database;
 
 public class Patient extends User {
     private int patientID;
@@ -23,6 +24,16 @@ public class Patient extends User {
         this.dateOfBirth = null;
         this.phoneNumber = null;
         this.address = null;
+    }
+
+    public Patient(String email, String password, String name, Gender gender, Date dateOfBirth, String phoneNumber,
+            String address) {
+        super(email, password);
+        this.name = name;
+        this.gender = gender;
+        this.dateOfBirth = dateOfBirth;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
     }
 
     @Override
@@ -123,6 +134,71 @@ public class Patient extends User {
     @Override
     public boolean getLoginState() {
         return patientID != 0;
+    }
+
+    public String getFullInfo() {
+        StringBuilder output = new StringBuilder();
+
+        int age = (LocalDate.now().minusYears(dateOfBirth.toLocalDate().getYear())).getYear();
+
+        output.append("Patient Information:\n");
+        output.append("Name: " + name + "\n");
+        output.append("Age: " + age + "\n");
+        output.append("Phone: " + phoneNumber + "\n");
+        output.append("Address: " + address);
+        return output.toString();
+    }
+
+    public String getInfo() {
+        StringBuilder output = new StringBuilder();
+
+        int age = (LocalDate.now().minusYears(dateOfBirth.toLocalDate().getYear())).getYear();
+
+        output.append("Name: " + name + "\n");
+        output.append("Age: " + age + "\n");
+        return output.toString();
+    }
+    
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Patient) {
+            Patient patientObj = (Patient) obj;
+            if (userID == patientObj.userID) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void addUser() throws SQLException {
+        super.addUser();
+        getUserByEmailPassword(email, password);
+        Database db = new Database();
+        String query = String.format(
+                "INSERT INTO patient (user_id, name, gender, date_of_birth, phone_number, address) VALUES ('%d', '%s', '%s', '%s', '%s', '%s');",
+                userID, name, gender, dateOfBirth, phoneNumber, address);
+        db.executeUpdate(query);
+    }
+
+    @Override
+    public void removeUser(int id) throws SQLException {
+        getUserById(id);
+        Database db = new Database();
+        String query = String.format("DELETE FROM patient WHERE patient_id = %d;", patientID);
+        db.executeUpdate(query);
+        super.removeUser(userID);
+    }
+
+    @Override
+    public void editUser() throws SQLException {
+        Database db = new Database();
+        String query = String.format(
+                "UPDATE patient SET name = '%s', gender = '%s', date_of_birth = '%s', phone_number = '%s', address = '%s' WHERE patient_id = '%d';",
+                name, gender, dateOfBirth, phoneNumber, address, patientID);
+        db.executeUpdate(query);
+        super.editUser();
     }
 
 }

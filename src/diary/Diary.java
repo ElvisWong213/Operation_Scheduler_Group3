@@ -8,17 +8,18 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
+import java.util.NoSuchElementException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONTokener;
 
+import type.DiaryAction;
 import dataStructure.BinaryTree;
 import dataStructure.MyLinkedList;
 import dataStructure.MyStack;
 import dataStructure.exception.DuplicateElementException;
 import database.Database;
-import type.DiaryAction;
 
 public class Diary {
     private BinaryTree<DiaryEntry> diaryEntries;
@@ -41,27 +42,37 @@ public class Diary {
         this.deletedDiaryEntries = new MyLinkedList<>();
     }
 
-    public void addEntry(DiaryEntry entry) throws DuplicateElementException {
+    public void addEntry(DiaryEntry entry, Boolean newAction) throws DuplicateElementException {
         diaryEntries.add(entry);
-        undoStack.push(new Action(entry, DiaryAction.Add));
-        clearRedo();
+        if (newAction) {
+            undoStack.push(new Action(entry, DiaryAction.Add));
+            clearRedo();
+        }
     }
 
-    public void deleteEntry(DiaryEntry entry) {
+    public void deleteEntry(DiaryEntry entry, boolean newAction) {
         diaryEntries.remove(entry);
         deletedDiaryEntries.add(entry);
-        undoStack.push(new Action(entry, DiaryAction.Remove));
-        clearRedo();
+        if (newAction) {
+            undoStack.push(new Action(entry, DiaryAction.Remove));
+            clearRedo();
+        }
     }
 
-    public void editEntry(DiaryEntry entry) {
+    public void editEntry(DiaryEntry entry, boolean newAction) {
         diaryEntries.update(entry);
-        undoStack.push(new Action(entry, DiaryAction.Edit));
-        clearRedo();
+        if (newAction) {
+            undoStack.push(new Action(entry, DiaryAction.Edit));
+            clearRedo();
+        }
     }
 
     public MyLinkedList<DiaryEntry> getListOfEntries() {
         return diaryEntries.inOrder();
+    }
+
+    public DiaryEntry getDataByIndex(int index) {
+        return getListOfEntries().get(index);
     }
 
     public void saveToDatabase() {
@@ -157,32 +168,32 @@ public class Diary {
         }
     }
 
-    public void undo() throws DuplicateElementException {
+    public void undo() throws DuplicateElementException, NoSuchElementException {
         Action action = undoStack.pop();
-        DiaryAction newDiaryAction = perform(action);
+        DiaryAction newDiaryAction = perform(action, false);
         redoStack.push(new Action(action.data, newDiaryAction));
     }
     
-    public void redo() throws DuplicateElementException {
+    public void redo() throws DuplicateElementException, NoSuchElementException {
         Action action = redoStack.pop();
-        DiaryAction newDiaryAction = perform(action);
+        DiaryAction newDiaryAction = perform(action, false);
         undoStack.push(new Action(action.data, newDiaryAction));
     }
     
-    private DiaryAction perform(Action action) throws DuplicateElementException {
+    private DiaryAction perform(Action action, boolean newAction) throws DuplicateElementException {
         DiaryAction newDiaryAction = null;
         switch (action.diaryAction) {
             case Add:
-                deleteEntry(action.data);
+                deleteEntry(action.data, newAction);
                 deletedDiaryEntries.add(action.data);
                 newDiaryAction = DiaryAction.Remove;
                 break;
             case Edit:
-                editEntry(action.data);
+                editEntry(action.data, newAction);
                 newDiaryAction = DiaryAction.Edit;
                 break;
             case Remove:
-                addEntry(action.data);
+                addEntry(action.data, newAction);
                 deletedDiaryEntries.removeByData(action.data);
                 newDiaryAction = DiaryAction.Add;
                 break;
@@ -201,42 +212,34 @@ public class Diary {
         redoStack = new MyStack<>();
     }
 
-    public void writeFile(String fileName) {
+    public void writeFile(String fileName) throws IOException {
         JSONArray jsonArray = new JSONArray();
         for (DiaryEntry entry : diaryEntries.inOrder()) {
             jsonArray.put(entry.toJSON());
         }
 
+        FileWriter fw = null;
+
         try {
-            FileWriter fw = new FileWriter(fileName + ".json");
+            fw = new FileWriter(fileName + ".json");
             fw.write(jsonArray.toString());
             fw.close();
             System.out.println("The data has been written to a JSON file");
         } catch (IOException e) {
-            System.out.println("An error occurred while writing to the file.");
+            throw new IOException("An error occurred while writing to the file.");
+        } finally {
+            fw.close();
         }
     }
     
-    public void readFile(String fileURL) {
-        try {
-            FileReader fr = new FileReader(fileURL);
-            JSONTokener tokener = new JSONTokener(fr);
-            JSONArray jsonArray = new JSONArray(tokener);
-            for (int i = 0; i < jsonArray.length(); i++) {
-                diaryEntries.add(new DiaryEntry(jsonArray.getJSONObject(i)));
-            }
-            System.out.println("JSON file has been read");
-            fr.close();
-        } catch (FileNotFoundException e) {
-            // TODO: handle exception
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (DuplicateElementException e) {
-            e.getMessage();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+    public void readFile(String fileURL) throws FileNotFoundException, JSONException, DuplicateElementException, IOException {
+        FileReader fr = new FileReader(fileURL);
+        JSONTokener tokener = new JSONTokener(fr);
+        JSONArray jsonArray = new JSONArray(tokener);
+        for (int i = 0; i < jsonArray.length(); i++) {
+            diaryEntries.add(new DiaryEntry(jsonArray.getJSONObject(i)));
         }
+        System.out.println("JSON file has been read");
+        fr.close();
     }
 }

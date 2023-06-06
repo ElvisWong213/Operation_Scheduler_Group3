@@ -1,5 +1,7 @@
 package dataStructure;
 
+import java.util.NoSuchElementException;
+
 public class MyStack<T> {
     private MyLinkedList<T> list;
 
@@ -19,7 +21,7 @@ public class MyStack<T> {
         list.addFirst(data);
     }
 
-    public T pop() {
+    public T pop() throws NoSuchElementException {
         return list.removeFirst();
     }
 

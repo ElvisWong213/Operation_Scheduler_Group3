@@ -1,5 +1,7 @@
 package dataStructure;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -9,7 +11,7 @@ import java.util.NoSuchElementException;
  * 
  * @param <T> The type of elements in the linked list.
  */
-public class MyLinkedList<T> implements Iterable<T> {
+public class MyLinkedList<T> implements Iterable<T>, Collection<T> {
     private Node<T> head;
     private int size; // track the length of linked list
     
@@ -117,8 +119,9 @@ public class MyLinkedList<T> implements Iterable<T> {
      * Adds an element to the end of the linked list.
      * 
      * @param data The data to be added to the end of the linked list.
+     * @return 
      */
-    public void add(T data) {
+    public boolean add(T data) {
         if (this.head == null) {
             this.head = new Node<T>(data);
         } else {
@@ -129,6 +132,7 @@ public class MyLinkedList<T> implements Iterable<T> {
             currentNode.next = new Node<T>(data);
         }
         this.size++;
+        return true;
     }
 
     /**
@@ -157,7 +161,7 @@ public class MyLinkedList<T> implements Iterable<T> {
      * 
      * @return The first element of the linked list.
      */
-    public T removeFirst() {
+    public T removeFirst() throws NoSuchElementException {
         if (isEmpty()) {
             throw new NoSuchElementException();
         }
@@ -280,23 +284,6 @@ public class MyLinkedList<T> implements Iterable<T> {
         }
         return currentNode;
     }
-
-    /**
-     * Returns an array containing all the elements in the linked list.
-     *
-     * @return An array containing all the elements in the linked list.
-     */
-    public Object[] toArray() {
-        Object[] array = new Object[size];
-        Node<T> current = head;
-        int index = 0;
-
-        while (current != null) {
-            array[index++] = current.data;
-            current = current.next;
-        }
-        return array;
-    }
     
     /**
      * Returns the data stored in the node at the specified index in the linked list.
@@ -323,17 +310,6 @@ public class MyLinkedList<T> implements Iterable<T> {
         this.size = 0;
     }
 
-    public boolean contains(T data) {
-        Node<T> currentNode = this.head;
-        for (int i = 0; i < size; i++) {
-            if (currentNode.data.equals(data)) {
-                return true;
-            }
-            currentNode = currentNode.next;
-        }
-        return false;
-    }
-
     public int indexOf(T data) {
         Node<T> currentNode = this.head;
         int index = -1;
@@ -345,5 +321,75 @@ public class MyLinkedList<T> implements Iterable<T> {
             currentNode = currentNode.next;
         }
         return index;
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        Node<T> currentNode = this.head;
+        for (int i = 0; i < size; i++) {
+            if (currentNode.data.equals(o)) {
+                return true;
+            }
+            currentNode = currentNode.next;
+        }
+        return false;
+    }
+
+    @Override
+    public Object[] toArray() {
+        Object[] array = new Object[size];
+        Node<T> current = head;
+        int index = 0;
+
+        while (current != null) {
+            array[index++] = current.data;
+            current = current.next;
+        }
+        return array;
+    }
+
+    @Override
+    public <T> T[] toArray(T[] a) {
+        if (a.length < size) {
+            a = Arrays.copyOf(a, size);
+        }
+        Node<T> current = (Node<T>) head;
+        int index = 0;
+
+        while (current != null) {
+            a[index++] = current.data;
+            current = current.next;
+        }
+        return a;
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'remove'");
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'containsAll'");
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends T> c) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'addAll'");
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'removeAll'");
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> c) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'retainAll'");
     }
 }

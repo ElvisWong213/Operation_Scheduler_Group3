@@ -20,15 +20,13 @@ public class UserManager {
                 professionals.add(professional);
             }
         } catch (SQLException e) {
-            // TODO: handle exception
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         } finally {
             if (db != null) {
                 try {
                     db.close();
                 } catch (SQLException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    System.out.println("Database could not close");
                 }
             }
         }
@@ -62,7 +60,15 @@ public class UserManager {
         return patients;
     }
 
-    public static MySet<LocalTime> availableTime(LocalDate date, User user) {
+    public static MySet<LocalTime> availableTime(LocalDate date, User user1, User user2) {
+        MySet<LocalTime> user1AvailableTime = UserManager.availableTimeEachUser(date, user1);
+        MySet<LocalTime> user2AvailableTime = UserManager.availableTimeEachUser(date, user2);
+        MySet<LocalTime> availableTime = new MySet<>(user1AvailableTime);
+        availableTime = availableTime.intersection(user2AvailableTime);
+        return availableTime;
+    }
+
+    private static MySet<LocalTime> availableTimeEachUser(LocalDate date, User user) {
         Date dbDate = Date.valueOf(date);
         MySet<LocalTime> times = new MySet<>();
         for (int i = 9; i < 17; i++) {
@@ -96,5 +102,4 @@ public class UserManager {
         }
         return times;
     }
-
 }

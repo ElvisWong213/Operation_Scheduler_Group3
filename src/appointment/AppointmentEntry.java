@@ -13,27 +13,28 @@ public class AppointmentEntry {
     private Time startTime;
     private Time endTime;
     private TreatmentType treatmentType;
+    private String description;
     private int professionalID;
     private int patientID;
-    
-    public AppointmentEntry(int id, Date date, Time startTime, Time endTime, TreatmentType treatmentType,
-            int professionalID, int patientID) {
+
+    public AppointmentEntry(int id, Date date, Time startTime, Time endTime, TreatmentType treatmentType, String description, int professionalID, int patientID) {
         this.id = id;
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
         this.treatmentType = treatmentType;
+        this.description = description;
         this.professionalID = professionalID;
         this.patientID = patientID;
     }
 
-    public AppointmentEntry(Date date, Time startTime, Time endTime, TreatmentType treatmentType,
-            int professionalID, int patientID) {
+    public AppointmentEntry(Date date, Time startTime, Time endTime, TreatmentType treatmentType, String description, int professionalID, int patientID) {
         this.id = 0;
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
         this.treatmentType = treatmentType;
+        this.description = description;
         this.professionalID = professionalID;
         this.patientID = patientID;
     }
@@ -78,6 +79,14 @@ public class AppointmentEntry {
         this.treatmentType = treatmentType;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public int getProfessionalID() {
         return professionalID;
     }
@@ -93,14 +102,14 @@ public class AppointmentEntry {
     public void setPatientID(int patientID) {
         this.patientID = patientID;
     }
-    
+
     public void print() {
         System.out.println("Date: " + date + " " + startTime + " - " + endTime);
         System.out.println("Treatment type:  " + treatmentType);
         System.out.println("Patient name: " + getPatientName(patientID));
         System.out.println("Staff name: " + getProfessionalName(professionalID));
     }
-    
+
     private String getProfessionalName(int id) {
         Professional professional = new Professional();
         try {
