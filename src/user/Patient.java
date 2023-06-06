@@ -5,8 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
-import database.Database;
 import type.Gender;
+import database.Database;
 
 public class Patient extends User {
     private int patientID;

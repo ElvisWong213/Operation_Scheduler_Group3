@@ -123,9 +123,16 @@ public class BinaryTree<T extends Comparable<T>> {
             if (current.left == null && current.right == null) {
                 return null;
             }
-            Node<T> successorNode = successor(current.right);
-            successorNode.left = current.left;
-            return successorNode;
+            if (current.right != null) {
+                Node<T> successorNode = successorRightSmallest(current.right);
+                successorNode.left = current.left;
+                return successorNode;
+            }
+            if (current.left != null) {
+                Node<T> successorNode = successorLeftLargerset(current.left) ;
+                successorNode.right = current.right;
+                return successorNode;
+            }
         }
         if (data.compareTo(current.data) > 0) {
             current.right = removePerform(current.right, data);
@@ -153,11 +160,18 @@ public class BinaryTree<T extends Comparable<T>> {
         return current;
     }
 
-    private Node<T> successor(Node<T> current) {
+    private Node<T> successorRightSmallest(Node<T> current) {
         if (current.left == null) {
             return current;
         }
-        return successor(current.left);
+        return successorRightSmallest(current.left);
+    }
+
+    private Node successorLeftLargerset(Node<T> current) {
+        if (current.right == null) {
+            return current;
+        }
+        return successorLeftLargerset(current.right);
     }
 
     private int getHeight(Node<T> current) {
@@ -276,6 +290,10 @@ public class BinaryTree<T extends Comparable<T>> {
      */
     public int size() {
         return this.size;
+    }
+
+    public boolean isEmpty() {
+        return size == 0;
     }
 
     public void clear() {

@@ -64,7 +64,7 @@ public class UserManager {
         MySet<LocalTime> user1AvailableTime = UserManager.availableTimeEachUser(date, user1);
         MySet<LocalTime> user2AvailableTime = UserManager.availableTimeEachUser(date, user2);
         MySet<LocalTime> availableTime = new MySet<>(user1AvailableTime);
-        availableTime.intersection(user2AvailableTime);
+        availableTime = availableTime.intersection(user2AvailableTime);
         return availableTime;
     }
 

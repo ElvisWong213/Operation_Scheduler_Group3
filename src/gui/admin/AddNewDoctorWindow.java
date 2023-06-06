@@ -28,9 +28,6 @@ public class AddNewDoctorWindow extends JDialog  {
 
     public AddNewDoctorWindow() {
         setTitle("Add New Doctor");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(400, 300);
-        setLocationRelativeTo(null);
 
         createComponents();
         createLayout();
@@ -40,15 +37,16 @@ public class AddNewDoctorWindow extends JDialog  {
         this.professional = professional;
 
         setTitle("Edit Doctor");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(400, 300);
-        setLocationRelativeTo(null);
 
         createComponents();
         createLayout();
     }
 
     private void createComponents() {
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setSize(400, 300);
+        setLocationRelativeTo(null);
+
         nameLabel = new JLabel("Name:");
         workLocationLabel = new JLabel("Work Location:");
         emailLabel = new JLabel("Email:");

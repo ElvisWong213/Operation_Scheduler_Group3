@@ -2,9 +2,14 @@ package gui.user;
 
 import javax.swing.*;
 
+import appointment.Appointment;
+import appointment.AppointmentEntry;
+import type.TreatmentType;
 import dataStructure.MyLinkedList;
 import dataStructure.MySet;
-import type.TreatmentType;
+import user.Patient;
+import user.Professional;
+import user.UserManager;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -13,13 +18,6 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
-
-import user.Patient;
-import user.Professional;
-import user.UserManager;
-
-import appointment.Appointment;
-import appointment.AppointmentEntry;
 
 public class AppointmentWindow extends JDialog {
     private MySet<LocalTime> availableTime;
@@ -370,6 +368,8 @@ public class AppointmentWindow extends JDialog {
             }
         });
 
+        updateDayTimeComboBox();
+
         //setVisible(true);
     }
 
@@ -471,7 +471,13 @@ public class AppointmentWindow extends JDialog {
         int selectedMonth = (int) monthComboBox.getSelectedItem();
         int selectedYear = (int) yearComboBox.getSelectedItem();
         LocalDate selectedDate = LocalDate.of(selectedYear, selectedMonth, selectedDay);
-        availableTime = UserManager.availableTime(selectedDate, patient, (Professional) doctorComboBox.getSelectedItem());
+        if (patient != null) {
+            availableTime = UserManager.availableTime(selectedDate, patient, (Professional) doctorComboBox.getSelectedItem());
+        } else if (professional != null) {
+            availableTime = UserManager.availableTime(selectedDate, (Patient) patientComboBox.getSelectedItem(), professional);
+        } else {
+            availableTime = UserManager.availableTime(selectedDate, (Patient) patientComboBox.getSelectedItem(), (Professional) doctorComboBox.getSelectedItem());
+        }
         timeComboBoxModel.removeAllElements();
         for (LocalTime time : availableTime.toArray(new LocalTime[0])) {
             timeComboBoxModel.addElement(time);

@@ -1,10 +1,11 @@
 package appointment;
+
 import java.sql.*;
 import java.time.*;
 
+import type.TreatmentType;
 import dataStructure.MyLinkedList;
 import database.Database;
-import type.TreatmentType;
 
 public class Appointment {
     private MyLinkedList<AppointmentEntry> appointments;
@@ -24,18 +25,27 @@ public class Appointment {
     public void searchAppointmentsInWeek(LocalDate inputDate, int professionalID, int patientID) {
         Date startDate = Date.valueOf(inputDate);
         Date endDate = Date.valueOf(inputDate.plusDays(7));
-        String query = String.format("SELECT * FROM appointment WHERE (professional_id = %d OR patient_id = %d) AND date >= '%s' AND date <= '%s' ORDER BY date ASC, start_time ASC;", professionalID, patientID, startDate, endDate);
+        String query = String.format(
+                "SELECT * FROM appointment WHERE (professional_id = %d OR patient_id = %d) AND date >= '%s' AND date <= '%s' ORDER BY date ASC, start_time ASC;",
+                professionalID, patientID, startDate, endDate);
         loadAppointments(query);
     }
 
     public void getAllAppointmentsByID(int professionalID, int patientID) {
-        String query = String.format("SELECT * FROM appointment WHERE (professional_id = %d OR patient_id = %d) ORDER BY date ASC, start_time ASC;", professionalID, patientID);
+        String query = String.format(
+                "SELECT * FROM appointment WHERE (professional_id = %d OR patient_id = %d) ORDER BY date ASC, start_time ASC;",
+                professionalID, patientID);
         loadAppointments(query);
     }
 
     public void getAllAppointments() {
         String query = "SELECT * FROM appointment ORDER BY date ASC, start_time ASC;";
         loadAppointments(query);
+    }
+
+    public void getProfessionAppointmentsDoNotHaveDiary(int professionalID) {
+        String querty = String.format("SELECT appointment.* FROM appointment LEFT JOIN diary ON appointment.date <> diary.date AND appointment.start_time <> diary.time WHERE appointment.professional_id = %d;", professionalID);
+        loadAppointments(querty);
     }
 
     private void loadAppointments(String query) {
@@ -54,7 +64,8 @@ public class Appointment {
                 int proID = rs.getInt("professional_id");
                 int patID = rs.getInt("patient_id");
 
-                AppointmentEntry appointmentEntry = new AppointmentEntry(id, date, startTime, endTime, treatmentType, description, proID, patID);
+                AppointmentEntry appointmentEntry = new AppointmentEntry(id, date, startTime, endTime, treatmentType,
+                        description, proID, patID);
                 appointments.add(appointmentEntry);
             }
         } catch (SQLException e) {
@@ -82,7 +93,9 @@ public class Appointment {
             int professionalID = ae.getProfessionalID();
             int patientID = ae.getPatientID();
             Database db = new Database();
-            String query = String.format("INSERT INTO appointment (date, start_time, end_time, treatment_type, description, professional_id, patient_id) VALUES ('%s', '%s', '%s', '%s', '%s', %d, %d)", dbDate, dbStarTime, dbEndTime, treatmentType, description, professionalID, patientID);
+            String query = String.format(
+                    "INSERT INTO appointment (date, start_time, end_time, treatment_type, description, professional_id, patient_id) VALUES ('%s', '%s', '%s', '%s', '%s', %d, %d)",
+                    dbDate, dbStarTime, dbEndTime, treatmentType, description, professionalID, patientID);
             db.executeUpdate(query);
         } catch (SQLException e) {
             System.out.println("Fail to book an appointment");
@@ -100,7 +113,10 @@ public class Appointment {
             int professionalID = ae.getProfessionalID();
             int patientID = ae.getPatientID();
             Database db = new Database();
-            String query = String.format("UPDATE appointment SET date = '%s', start_time = '%s', end_time = '%s', treatment_type = '%s', description = '%s', professional_id = %d, patient_id = %d WHERE appointment_id = %d;", dbDate, dbStarTime, dbEndTime, treatmentType, description, professionalID, patientID, appointmentID);
+            String query = String.format(
+                    "UPDATE appointment SET date = '%s', start_time = '%s', end_time = '%s', treatment_type = '%s', description = '%s', professional_id = %d, patient_id = %d WHERE appointment_id = %d;",
+                    dbDate, dbStarTime, dbEndTime, treatmentType, description, professionalID, patientID,
+                    appointmentID);
             db.executeUpdate(query);
         } catch (SQLException e) {
             System.out.println("Fail to book an appointment");

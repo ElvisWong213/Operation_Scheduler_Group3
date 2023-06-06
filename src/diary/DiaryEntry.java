@@ -83,10 +83,23 @@ public class DiaryEntry implements Comparable<DiaryEntry> {
         LocalTime lt = time.toLocalTime();
         LocalDateTime ldt = LocalDateTime.of(ld, lt);
 
-        LocalDate otherLd = other.date.toLocalDate();
-        LocalTime otherLt = other.time.toLocalTime();
-        LocalDateTime otherLdt = LocalDateTime.of(otherLd, otherLt);
-        return ldt.compareTo(otherLdt);
+        int compare = 0;
+        if (other.date != null && other.time != null) {
+            LocalDate otherLd = other.date.toLocalDate();
+            LocalTime otherLt = other.time.toLocalTime();
+            LocalDateTime otherLdt = LocalDateTime.of(otherLd, otherLt);
+            compare = ldt.compareTo(otherLdt);
+        }
+        if (compare == 0) {
+            if (patientID > other.patientID) {
+                compare = 1;
+            } else if (patientID < other.patientID) {
+                compare = -1;
+            } else {
+                compare = 0;
+            }
+        }
+        return compare;
     }
 
     public JSONObject toJSON() {

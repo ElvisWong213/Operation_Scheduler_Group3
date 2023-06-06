@@ -3,8 +3,8 @@ package user;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import database.Database;
 import type.Profession;
+import database.Database;
 
 public class Professional extends User {
     private int professionalID;

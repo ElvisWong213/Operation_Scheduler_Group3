@@ -5,8 +5,8 @@ import javax.swing.*;
 import gui.admin.AddNewPatientWindow;
 import gui.admin.HospitalScheduler;
 import gui.user.HospitalUserScheduler;
-import user.Professional;
 import user.Patient;
+import user.Professional;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -147,7 +147,7 @@ public class AuthenticationWindow {
         else
         {
             if (professional.getLoginState()) {
-
+                HospitalUserScheduler mainWindow = new HospitalUserScheduler(professional);
             } else if (patient.getLoginState()) {
                 HospitalUserScheduler mainWindow = new HospitalUserScheduler(patient);
             }

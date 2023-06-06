@@ -3,8 +3,8 @@ package gui.admin;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-import dataStructure.MyLinkedList;
 import type.Gender;
+import dataStructure.MyLinkedList;
 import user.Patient;
 
 import java.awt.*;

@@ -61,6 +61,7 @@ CREATE TABLE appointment (
 
 INSERT INTO appointment (date, start_time, end_time, treatment_type, description, professional_id, patient_id)
 VALUES ('2023-05-30', '12:00:00', '13:00:00', 'Consultation', 'description', 1, 1);
+VALUES ('2023-05-30', '13:00:00', '14:00:00', 'Consultation', 'description', 1, 1);
 
 -- diary database
 CREATE TABLE diary (

@@ -161,7 +161,7 @@ public class MyLinkedList<T> implements Iterable<T>, Collection<T> {
      * 
      * @return The first element of the linked list.
      */
-    public T removeFirst() {
+    public T removeFirst() throws NoSuchElementException {
         if (isEmpty()) {
             throw new NoSuchElementException();
         }

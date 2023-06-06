@@ -6,10 +6,10 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
-import user.Patient;
-import user.Professional;
 import appointment.Appointment;
 import appointment.AppointmentEntry;
+import user.Patient;
+import user.Professional;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -44,7 +44,7 @@ public class ShowUserAppointmentsWindow {
         openWindow();
     }
 
-    public void openWindow() {
+    private void openWindow() {
         if (patient != null) {
             showAppointmentsFrame = new JFrame("Appointments " + patient.getName());
         } else if (professional != null) {
@@ -59,7 +59,7 @@ public class ShowUserAppointmentsWindow {
         // Check if there are appointments in the Hospital object
         if (appointment.getAppointments().isEmpty()) {
             JOptionPane.showMessageDialog(null, "No appointments found.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+            showAppointmentsFrame.dispose();
         }
 
         // Create a table to display the list of appointments
