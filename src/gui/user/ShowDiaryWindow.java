@@ -27,11 +27,11 @@ import javax.swing.table.DefaultTableModel;
 
 import org.json.JSONException;
 
-import dataStructure.exception.DuplicateElementException;
-import diary.Diary;
-import diary.DiaryEntry;
-import user.Patient;
-import user.Professional;
+import backend.dataStructure.exception.DuplicateElementException;
+import backend.diary.Diary;
+import backend.diary.DiaryEntry;
+import backend.user.Patient;
+import backend.user.Professional;
 
 public class ShowDiaryWindow {
     private JTable diaryTable;

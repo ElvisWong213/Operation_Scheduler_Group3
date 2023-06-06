@@ -2,14 +2,14 @@ package gui.user;
 
 import javax.swing.*;
 
-import appointment.Appointment;
-import appointment.AppointmentEntry;
-import type.TreatmentType;
-import dataStructure.MyLinkedList;
-import dataStructure.MySet;
-import user.Patient;
-import user.Professional;
-import user.UserManager;
+import backend.appointment.Appointment;
+import backend.appointment.AppointmentEntry;
+import backend.dataStructure.MyLinkedList;
+import backend.dataStructure.MySet;
+import backend.type.TreatmentType;
+import backend.user.Patient;
+import backend.user.Professional;
+import backend.user.UserManager;
 
 import java.awt.*;
 import java.awt.event.*;

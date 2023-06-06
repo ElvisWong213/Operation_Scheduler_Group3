@@ -23,11 +23,11 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
-import appointment.Appointment;
-import appointment.AppointmentEntry;
-import dataStructure.MyLinkedList;
-import user.Patient;
-import user.Professional;
+import backend.appointment.Appointment;
+import backend.appointment.AppointmentEntry;
+import backend.dataStructure.MyLinkedList;
+import backend.user.Patient;
+import backend.user.Professional;
 
 public class ShowUserAppointmentsWindow {
     private JFrame showAppointmentsFrame;

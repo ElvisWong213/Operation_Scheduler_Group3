@@ -1,4 +1,4 @@
-package type;
+package backend.type;
 
 public enum Gender {
     Male,

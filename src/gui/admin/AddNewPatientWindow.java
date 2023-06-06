@@ -3,9 +3,9 @@ package gui.admin;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-import type.Gender;
-import dataStructure.MyLinkedList;
-import user.Patient;
+import backend.dataStructure.MyLinkedList;
+import backend.type.Gender;
+import backend.user.Patient;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -178,6 +178,7 @@ public class AddNewPatientWindow extends JDialog {
                     } catch (NumberFormatException n) {
                         JOptionPane.showMessageDialog(mainPanel, "Invalid phone number");
                     } catch (SQLException sql) {
+                        sql.printStackTrace();
                         JOptionPane.showMessageDialog(mainPanel, "Email already exist");
                     }
     

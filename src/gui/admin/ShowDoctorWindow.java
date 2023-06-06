@@ -6,9 +6,9 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
-import dataStructure.MyLinkedList;
-import user.Professional;
-import user.UserManager;
+import backend.dataStructure.MyLinkedList;
+import backend.user.Professional;
+import backend.user.UserManager;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;

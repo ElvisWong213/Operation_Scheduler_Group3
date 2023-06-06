@@ -1,10 +1,10 @@
-package appointment;
+package backend.appointment;
 
 import java.sql.*;
 import java.time.*;
 
-import type.TreatmentType;
-import dataStructure.MyLinkedList;
+import backend.dataStructure.MyLinkedList;
+import backend.type.TreatmentType;
 import database.Database;
 
 public class Appointment {

@@ -4,9 +4,9 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
-import dataStructure.MyLinkedList;
-import user.Patient;
-import user.Professional;
+import backend.dataStructure.MyLinkedList;
+import backend.user.Patient;
+import backend.user.Professional;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;

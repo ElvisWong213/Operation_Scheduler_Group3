@@ -1,4 +1,4 @@
-package diary;
+package backend.diary;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -14,11 +14,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONTokener;
 
-import type.DiaryAction;
-import dataStructure.BinaryTree;
-import dataStructure.MyLinkedList;
-import dataStructure.MyStack;
-import dataStructure.exception.DuplicateElementException;
+import backend.dataStructure.BinaryTree;
+import backend.dataStructure.MyLinkedList;
+import backend.dataStructure.MyStack;
+import backend.dataStructure.exception.DuplicateElementException;
+import backend.type.DiaryAction;
 import database.Database;
 
 public class Diary {

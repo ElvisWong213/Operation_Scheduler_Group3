@@ -1,11 +1,11 @@
-package user;
+package backend.user;
 
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
-import type.Gender;
+import backend.type.Gender;
 import database.Database;
 
 public class Patient extends User {

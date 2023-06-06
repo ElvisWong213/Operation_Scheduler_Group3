@@ -1,4 +1,4 @@
-package user;
+package backend.user;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

@@ -1,11 +1,11 @@
-package appointment;
+package backend.appointment;
 
 import java.sql.*;
 import java.sql.SQLException;
 
-import type.TreatmentType;
-import user.Patient;
-import user.Professional;
+import backend.type.TreatmentType;
+import backend.user.Patient;
+import backend.user.Professional;
 
 public class AppointmentEntry {
     private int id;

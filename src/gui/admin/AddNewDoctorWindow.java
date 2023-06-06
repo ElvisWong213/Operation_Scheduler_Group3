@@ -3,8 +3,8 @@ package gui.admin;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-import type.Profession;
-import user.Professional;
+import backend.type.Profession;
+import backend.user.Professional;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;

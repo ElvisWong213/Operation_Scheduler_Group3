@@ -27,13 +27,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 
-import appointment.Appointment;
-import appointment.AppointmentEntry;
-import dataStructure.MyLinkedList;
-import dataStructure.exception.DuplicateElementException;
-import diary.Diary;
-import diary.DiaryEntry;
-import user.Patient;
+import backend.appointment.Appointment;
+import backend.appointment.AppointmentEntry;
+import backend.dataStructure.MyLinkedList;
+import backend.dataStructure.exception.DuplicateElementException;
+import backend.diary.Diary;
+import backend.diary.DiaryEntry;
+import backend.user.Patient;
 
 public class AddNewDiaryWindow extends JDialog {
     private JLabel appointmentLabel;

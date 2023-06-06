@@ -1,9 +1,9 @@
-package user;
+package backend.user;
 
 import java.sql.*;
 import java.time.*;
 
-import dataStructure.*;
+import backend.dataStructure.*;
 import database.Database;
 
 public class UserManager {

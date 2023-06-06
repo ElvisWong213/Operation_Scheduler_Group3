@@ -1,9 +1,9 @@
-package dataStructure;
+package backend.dataStructure;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import dataStructure.MyLinkedList;
+import backend.dataStructure.MyLinkedList;
 
 import java.util.Iterator;
 

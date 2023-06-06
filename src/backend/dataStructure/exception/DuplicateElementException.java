@@ -1,4 +1,4 @@
-package dataStructure.exception;
+package backend.dataStructure.exception;
 
 /**
  * DuplicateElementException is an exception that is thrown when an element already exists

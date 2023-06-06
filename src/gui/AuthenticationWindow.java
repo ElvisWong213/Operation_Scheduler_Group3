@@ -2,11 +2,11 @@ package gui;
 
 import javax.swing.*;
 
+import backend.user.Patient;
+import backend.user.Professional;
 import gui.admin.AddNewPatientWindow;
 import gui.admin.HospitalScheduler;
 import gui.user.HospitalUserScheduler;
-import user.Patient;
-import user.Professional;
 
 import java.awt.*;
 import java.awt.event.*;

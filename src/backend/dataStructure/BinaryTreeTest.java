@@ -1,4 +1,4 @@
-package dataStructure;
+package backend.dataStructure;
 
 import static org.junit.Assert.*;
 
@@ -7,8 +7,8 @@ import java.util.NoSuchElementException;
 import org.junit.Before;
 import org.junit.Test;
 
-import dataStructure.BinaryTree;
-import dataStructure.exception.DuplicateElementException;
+import backend.dataStructure.BinaryTree;
+import backend.dataStructure.exception.DuplicateElementException;
 
 public class BinaryTreeTest {
 

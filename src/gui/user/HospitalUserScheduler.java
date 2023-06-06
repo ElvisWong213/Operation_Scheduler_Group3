@@ -2,11 +2,11 @@ package gui.user;
 
 import javax.swing.*;
 
+import backend.user.Patient;
+import backend.user.Professional;
+import backend.user.UserManager;
 import gui.AuthenticationWindow;
 import gui.ImagePanel;
-import user.Patient;
-import user.Professional;
-import user.UserManager;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;

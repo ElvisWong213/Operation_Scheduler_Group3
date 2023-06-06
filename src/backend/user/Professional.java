@@ -1,9 +1,9 @@
-package user;
+package backend.user;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import type.Profession;
+import backend.type.Profession;
 import database.Database;
 
 public class Professional extends User {

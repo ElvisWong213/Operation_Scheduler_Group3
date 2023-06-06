@@ -1,4 +1,4 @@
-package diary;
+package backend.diary;
 
 import java.sql.*;
 import java.time.*;

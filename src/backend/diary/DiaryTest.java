@@ -1,10 +1,10 @@
-package diary;
+package backend.diary;
 
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import dataStructure.exception.DuplicateElementException;
+import backend.dataStructure.exception.DuplicateElementException;
 
 import java.io.File;
 import java.sql.Date;

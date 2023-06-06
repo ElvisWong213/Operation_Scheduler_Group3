@@ -1,4 +1,4 @@
-package dataStructure;
+package backend.dataStructure;
 
 import java.util.Arrays;
 

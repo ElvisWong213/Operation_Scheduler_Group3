@@ -1,7 +1,7 @@
-package dataStructure;
+package backend.dataStructure;
 import java.util.NoSuchElementException;
 
-import dataStructure.exception.DuplicateElementException;
+import backend.dataStructure.exception.DuplicateElementException;
 
 /**
  * Represents a binary search tree data structure.

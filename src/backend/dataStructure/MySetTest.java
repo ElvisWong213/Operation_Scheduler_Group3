@@ -1,4 +1,4 @@
-package dataStructure;
+package backend.dataStructure;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
