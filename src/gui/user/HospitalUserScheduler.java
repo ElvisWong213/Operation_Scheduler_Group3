@@ -2,6 +2,7 @@ package gui.user;
 
 import javax.swing.*;
 
+import gui.AuthenticationWindow;
 import gui.ImagePanel;
 import user.Patient;
 import user.Professional;
@@ -61,6 +62,19 @@ public class HospitalUserScheduler {
             }
         });
         appointmentsMenu.add(scheduleAppointmentMenuItem);
+        
+        JMenu accountMenu = new JMenu("Account");
+        menuBar.add(accountMenu);
+
+        JMenuItem logoutMenuItem = new JMenuItem("Logout");
+        logoutMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+                new AuthenticationWindow();
+            }
+        });
+        accountMenu.add(logoutMenuItem);
 
         // Create active patient label
         activePatientTextArea.setText(patient.getFullInfo());
@@ -135,6 +149,19 @@ public class HospitalUserScheduler {
             }
         });
         diaryMenu.add(showMyDiaryMenuItem);
+        
+        JMenu accountMenu = new JMenu("Account");
+        menuBar.add(accountMenu);
+
+        JMenuItem logoutMenuItem = new JMenuItem("Logout");
+        logoutMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+                new AuthenticationWindow();
+            }
+        });
+        accountMenu.add(logoutMenuItem);
 
         // Create active patient label
         activePatientTextArea.setText(professional.getFullInfo());

@@ -2,6 +2,7 @@ package gui.admin;
 
 import javax.swing.*;
 
+import gui.AuthenticationWindow;
 import gui.ImagePanel;
 import gui.user.AppointmentWindow;
 import gui.user.ShowUserAppointmentsWindow;
@@ -95,7 +96,18 @@ public class HospitalScheduler {
         });
         appointmentsMenu.add(scheduleAppointmentMenuItem);
 
+        JMenu accountMenu = new JMenu("Account");
+        menuBar.add(accountMenu);
 
+        JMenuItem logoutMenuItem = new JMenuItem("Logout");
+        logoutMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+                new AuthenticationWindow();
+            }
+        });
+        accountMenu.add(logoutMenuItem);
 
         ImagePanel imagePanel = new ImagePanel();
         // Set layout manager for the frame

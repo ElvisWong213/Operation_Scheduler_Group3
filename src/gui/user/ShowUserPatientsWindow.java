@@ -82,7 +82,6 @@ public class ShowUserPatientsWindow {
         for (Patient patient : patients) {
             int age = LocalDate.now().minusYears(patient.getDateOfBirth().toLocalDate().getYear()).getYear();
             Object[] rowData = {
-                    patient.getPatientID(),
                     patient.getName(),
                     patient.getGender(),
                     age,
