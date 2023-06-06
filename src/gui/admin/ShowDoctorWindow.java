@@ -48,7 +48,7 @@ public class ShowDoctorWindow {
         JButton addButton = new JButton("Add");
         JButton deleteButton = new JButton("Delete");
         JButton editButton = new JButton("Edit");
-        JButton searchButton = new JButton("Search");
+        // JButton searchButton = new JButton("Search");
         JButton exitButton = new JButton("Exit");
 
         // Create a panel for the buttons and set its layout
@@ -59,14 +59,14 @@ public class ShowDoctorWindow {
         addButton.setBorder(new EmptyBorder(10, 10, 10, 10));
         deleteButton.setBorder(new EmptyBorder(10, 10, 10, 10));
         editButton.setBorder(new EmptyBorder(10, 10, 10, 10));
-        searchButton.setBorder(new EmptyBorder(10, 10, 10, 10));
+        // searchButton.setBorder(new EmptyBorder(10, 10, 10, 10));
         exitButton.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         // Add buttons to the panel
         bottomPanel.add(addButton);
         bottomPanel.add(deleteButton);
         bottomPanel.add(editButton);
-        bottomPanel.add(searchButton);
+        // bottomPanel.add(searchButton);
         bottomPanel.add(exitButton);
 
         // Set the layout for the frame
@@ -172,35 +172,35 @@ public class ShowDoctorWindow {
         });
 
         // Add action listener for Search button
-        searchButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String searchValue = JOptionPane.showInputDialog(null, "Enter a search value:", "Search", JOptionPane.PLAIN_MESSAGE);
-                if (searchValue == null || searchValue.isEmpty()) {
-                    return;
-                }
-                DefaultTableModel searchTableModel = new DefaultTableModel();
-                searchTableModel.addColumn("First Name");
-                searchTableModel.addColumn("Last Name");
-                searchTableModel.addColumn("Middle Name");
-                searchTableModel.addColumn("Specialization");
-                for (Doctor doctor : doctorList) {
-                    if (doctor.getFirstName().equalsIgnoreCase(searchValue) ||
-                            doctor.getLastName().equalsIgnoreCase(searchValue) ||
-                            doctor.getMiddleName().equalsIgnoreCase(searchValue) ||
-                            doctor.getSpecialization().equalsIgnoreCase(searchValue)) {
-                        Object[] rowData = {
-                                doctor.getFirstName(),
-                                doctor.getLastName(),
-                                doctor.getMiddleName(),
-                                doctor.getSpecialization()
-                        };
-                        searchTableModel.addRow(rowData);
-                    }
-                }
-                doctorsTable.setModel(searchTableModel);
-            }
-        });
+        // searchButton.addActionListener(new ActionListener() {
+        //     @Override
+        //     public void actionPerformed(ActionEvent e) {
+        //         String searchValue = JOptionPane.showInputDialog(null, "Enter a search value:", "Search", JOptionPane.PLAIN_MESSAGE);
+        //         if (searchValue == null || searchValue.isEmpty()) {
+        //             return;
+        //         }
+        //         DefaultTableModel searchTableModel = new DefaultTableModel();
+        //         searchTableModel.addColumn("First Name");
+        //         searchTableModel.addColumn("Last Name");
+        //         searchTableModel.addColumn("Middle Name");
+        //         searchTableModel.addColumn("Specialization");
+        //         for (Doctor doctor : doctorList) {
+        //             if (doctor.getFirstName().equalsIgnoreCase(searchValue) ||
+        //                     doctor.getLastName().equalsIgnoreCase(searchValue) ||
+        //                     doctor.getMiddleName().equalsIgnoreCase(searchValue) ||
+        //                     doctor.getSpecialization().equalsIgnoreCase(searchValue)) {
+        //                 Object[] rowData = {
+        //                         doctor.getFirstName(),
+        //                         doctor.getLastName(),
+        //                         doctor.getMiddleName(),
+        //                         doctor.getSpecialization()
+        //                 };
+        //                 searchTableModel.addRow(rowData);
+        //             }
+        //         }
+        //         doctorsTable.setModel(searchTableModel);
+        //     }
+        // });
 
         // Add action listener for Exit button
         exitButton.addActionListener(new ActionListener() {

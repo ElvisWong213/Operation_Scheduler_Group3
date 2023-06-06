@@ -49,7 +49,7 @@ public class ShowPatientsWindow {
         JButton addButton = new JButton("Add");
         JButton deleteButton = new JButton("Delete");
         JButton editButton = new JButton("Edit");
-        JButton searchButton = new JButton("Search");
+        // JButton searchButton = new JButton("Search");
         JButton exitButton = new JButton("Exit");
 
         // Create a panel for the buttons and set its layout
@@ -60,14 +60,14 @@ public class ShowPatientsWindow {
         addButton.setBorder(new EmptyBorder(10, 10, 10, 10));
         deleteButton.setBorder(new EmptyBorder(10, 10, 10, 10));
         editButton.setBorder(new EmptyBorder(10, 10, 10, 10));
-        searchButton.setBorder(new EmptyBorder(10, 10, 10, 10));
+        // searchButton.setBorder(new EmptyBorder(10, 10, 10, 10));
         exitButton.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         // Add buttons to the panel
         bottomPanel.add(addButton);
         bottomPanel.add(deleteButton);
         bottomPanel.add(editButton);
-        bottomPanel.add(searchButton);
+        // bottomPanel.add(searchButton);
         bottomPanel.add(exitButton);
 
         // Set the layout for the frame
@@ -176,48 +176,48 @@ public class ShowPatientsWindow {
         });
 
         // Add action listener for Search button
-        searchButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String searchValue = JOptionPane.showInputDialog(null, "Enter a search value:", "Search", JOptionPane.PLAIN_MESSAGE);
-                if (searchValue == null || searchValue.isEmpty()) {
-                    return;
-                }
-                List<Patient> patientList = hospital.getPatients();
-                DefaultTableModel searchTableModel = new DefaultTableModel();
-                searchTableModel.addColumn("First Name");
-                searchTableModel.addColumn("Last Name");
-                searchTableModel.addColumn("Age");
-                searchTableModel.addColumn("Weight");
-                searchTableModel.addColumn("Height");
-                searchTableModel.addColumn("Phone");
-                searchTableModel.addColumn("Address");
-                searchTableModel.addColumn("Notes");
-                for (Patient patient : patientList) {
-                    if (patient.getFirstName().equalsIgnoreCase(searchValue) ||
-                            patient.getLastName().equalsIgnoreCase(searchValue) ||
-                            String.valueOf(patient.getAge()).equalsIgnoreCase(searchValue) ||
-                            String.valueOf(patient.getWeight()).equalsIgnoreCase(searchValue) ||
-                            String.valueOf(patient.getHeight()).equalsIgnoreCase(searchValue) ||
-                            patient.getPhone().equalsIgnoreCase(searchValue) ||
-                            patient.getAddress().equalsIgnoreCase(searchValue) ||
-                            patient.getNotes().equalsIgnoreCase(searchValue)) {
-                        Object[] rowData = {
-                                patient.getFirstName(),
-                                patient.getLastName(),
-                                patient.getAge(),
-                                patient.getWeight(),
-                                patient.getHeight(),
-                                patient.getPhone(),
-                                patient.getAddress(),
-                                patient.getNotes()
-                        };
-                        searchTableModel.addRow(rowData);
-                    }
-                }
-                patientsTable.setModel(searchTableModel);
-            }
-        });
+        // searchButton.addActionListener(new ActionListener() {
+        //     @Override
+        //     public void actionPerformed(ActionEvent e) {
+        //         String searchValue = JOptionPane.showInputDialog(null, "Enter a search value:", "Search", JOptionPane.PLAIN_MESSAGE);
+        //         if (searchValue == null || searchValue.isEmpty()) {
+        //             return;
+        //         }
+        //         List<Patient> patientList = hospital.getPatients();
+        //         DefaultTableModel searchTableModel = new DefaultTableModel();
+        //         searchTableModel.addColumn("First Name");
+        //         searchTableModel.addColumn("Last Name");
+        //         searchTableModel.addColumn("Age");
+        //         searchTableModel.addColumn("Weight");
+        //         searchTableModel.addColumn("Height");
+        //         searchTableModel.addColumn("Phone");
+        //         searchTableModel.addColumn("Address");
+        //         searchTableModel.addColumn("Notes");
+        //         for (Patient patient : patientList) {
+        //             if (patient.getFirstName().equalsIgnoreCase(searchValue) ||
+        //                     patient.getLastName().equalsIgnoreCase(searchValue) ||
+        //                     String.valueOf(patient.getAge()).equalsIgnoreCase(searchValue) ||
+        //                     String.valueOf(patient.getWeight()).equalsIgnoreCase(searchValue) ||
+        //                     String.valueOf(patient.getHeight()).equalsIgnoreCase(searchValue) ||
+        //                     patient.getPhone().equalsIgnoreCase(searchValue) ||
+        //                     patient.getAddress().equalsIgnoreCase(searchValue) ||
+        //                     patient.getNotes().equalsIgnoreCase(searchValue)) {
+        //                 Object[] rowData = {
+        //                         patient.getFirstName(),
+        //                         patient.getLastName(),
+        //                         patient.getAge(),
+        //                         patient.getWeight(),
+        //                         patient.getHeight(),
+        //                         patient.getPhone(),
+        //                         patient.getAddress(),
+        //                         patient.getNotes()
+        //                 };
+        //                 searchTableModel.addRow(rowData);
+        //             }
+        //         }
+        //         patientsTable.setModel(searchTableModel);
+        //     }
+        // });
 
         // Add action listener for Exit button
         exitButton.addActionListener(new ActionListener() {

@@ -9,9 +9,9 @@ import javax.imageio.ImageIO;
 public class ImagePanel extends JPanel {
     private BufferedImage image;
 
-    public ImagePanel(String imagePath) {
+    public ImagePanel() {
         try {
-            image = ImageIO.read(new File(imagePath));
+            image = ImageIO.read(getClass().getResource("bcg.jpg"));
         } catch (Exception e) {
             e.printStackTrace();
         }

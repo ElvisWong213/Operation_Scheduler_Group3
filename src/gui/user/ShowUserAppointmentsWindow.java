@@ -1,20 +1,33 @@
 package gui.user;
 
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.List;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.SQLException;
+import java.util.stream.Collectors;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 import appointment.Appointment;
 import appointment.AppointmentEntry;
+import dataStructure.MyLinkedList;
 import user.Patient;
 import user.Professional;
-
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.sql.SQLException;
 
 public class ShowUserAppointmentsWindow {
     private JFrame showAppointmentsFrame;
@@ -23,6 +36,7 @@ public class ShowUserAppointmentsWindow {
     private Appointment appointment;
     private JTable appointmentsTable;
     private DefaultTableModel tableModel;
+    private JTextField searchField;
 
     public ShowUserAppointmentsWindow(Patient patient) {
         this.patient = patient;
@@ -61,7 +75,32 @@ public class ShowUserAppointmentsWindow {
             JOptionPane.showMessageDialog(null, "No appointments found.", "Error", JOptionPane.ERROR_MESSAGE);
             showAppointmentsFrame.dispose();
         }
+        // Create search bar
+        searchField = new JTextField(20);
 
+        // Add search bar to a panel
+        JPanel searchPanel = new JPanel();
+        searchPanel.add(new JLabel("Search: "));
+        searchPanel.add(searchField);
+
+        searchField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                performSearch();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                performSearch();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                performSearch();
+            }
+
+            
+        });
         // Create a table to display the list of appointments
         appointmentsTable = new JTable();
         JScrollPane scrollPane = new JScrollPane(appointmentsTable);
@@ -97,6 +136,7 @@ public class ShowUserAppointmentsWindow {
         // Add components to the frame
         showAppointmentsFrame.add(scrollPane, BorderLayout.CENTER);
         showAppointmentsFrame.add(bottomPanel, BorderLayout.SOUTH);
+        showAppointmentsFrame.add(searchPanel, BorderLayout.NORTH);
 
         // Create the table model
         tableModel = new DefaultTableModel() {
@@ -149,16 +189,17 @@ public class ShowUserAppointmentsWindow {
 
                 AppointmentWindow addNewAppointmentWindow = null;
                 if (patient != null) {
-                    addNewAppointmentWindow = new AppointmentWindow(patient, appointment.getAppointments().get(selectedRow));
+                    addNewAppointmentWindow = new AppointmentWindow(patient,
+                            appointment.getAppointments().get(selectedRow));
                 } else if (professional != null) {
-                    addNewAppointmentWindow = new AppointmentWindow(professional, appointment.getAppointments().get(selectedRow));
+                    addNewAppointmentWindow = new AppointmentWindow(professional,
+                            appointment.getAppointments().get(selectedRow));
                 } else {
                     addNewAppointmentWindow = new AppointmentWindow(appointment.getAppointments().get(selectedRow));
                 }
                 addNewAppointmentWindow.setModal(true); // Set the dialog as modal
                 addNewAppointmentWindow.setVisible(true);
 
-                
                 fetchAppointment();
                 initialiseTable();
 
@@ -170,7 +211,7 @@ public class ShowUserAppointmentsWindow {
             public void actionPerformed(ActionEvent e) {
                 // Show the form for adding a new appointment
                 AppointmentWindow addNewAppointmentWindow = null;
-                
+
                 if (patient != null) {
                     addNewAppointmentWindow = new AppointmentWindow(patient, null);
                 } else if (professional != null) {
@@ -180,7 +221,7 @@ public class ShowUserAppointmentsWindow {
                 }
                 addNewAppointmentWindow.setModal(true); // Set the dialog as modal
                 addNewAppointmentWindow.setVisible(true);
-        
+
                 fetchAppointment();
                 initialiseTable();
             }
@@ -236,21 +277,20 @@ public class ShowUserAppointmentsWindow {
 
     private void initialiseTable() {
         tableModel.setRowCount(0);
-        for (AppointmentEntry appointmentEntry : appointment.getAppointments())
-        {
+        for (AppointmentEntry appointmentEntry : appointment.getAppointments()) {
             try {
                 Patient patientTS = new Patient();
                 patientTS.getUserById(appointmentEntry.getPatientID());
                 Professional professionalTS = new Professional();
                 professionalTS.getUserById(appointmentEntry.getProfessionalID());
                 Object[] rowData = {
-                    appointmentEntry.getDate(),
-                    appointmentEntry.getStartTime(),
-                    appointmentEntry.getEndTime(),
-                    patientTS.getInfo(),
-                    appointmentEntry.getTreatmentType(),
-                    appointmentEntry.getDescription(),
-                    professionalTS.getName()
+                        appointmentEntry.getDate(),
+                        appointmentEntry.getStartTime(),
+                        appointmentEntry.getEndTime(),
+                        patientTS.getInfo(),
+                        appointmentEntry.getTreatmentType(),
+                        appointmentEntry.getDescription(),
+                        professionalTS.getName()
                 };
                 tableModel.addRow(rowData);
             } catch (SQLException e) {
@@ -289,5 +329,37 @@ public class ShowUserAppointmentsWindow {
         details.append("\n").append(professionalTS.getFullInfo()).append("\n");
 
         JOptionPane.showMessageDialog(null, details.toString(), "Appointment Details", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void performSearch() {
+        fetchAppointment();
+        if (!searchField.getText().isEmpty() && !searchField.getText().isBlank()) {
+            String query = searchField.getText().trim().toLowerCase();
+    
+            MyLinkedList<AppointmentEntry> filteredAppointments = new MyLinkedList<>();
+            for (AppointmentEntry appointmentEntry : appointment.getAppointments()) {
+                Patient patientTS = new Patient();
+                Professional professionalTS = new Professional();
+                try {
+                    patientTS.getUserById(appointmentEntry.getPatientID());
+                    professionalTS.getUserById(appointmentEntry.getProfessionalID());
+                } catch (SQLException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                if (appointmentEntry.getDate().toLocalDate().toString().toLowerCase().contains(query)
+                    || appointmentEntry.getStartTime().toLocalTime().toString().toLowerCase().contains(query)
+                    || appointmentEntry.getEndTime().toLocalTime().toString().toLowerCase().contains(query)
+                    || appointmentEntry.getTreatmentType().toString().toLowerCase().contains(query)
+                    || patientTS.getName().toLowerCase().contains(query)
+                    || professionalTS.getName().toLowerCase().contains(query)) {
+                    filteredAppointments.add(appointmentEntry);
+                }
+            }
+            appointment.setAppointments(filteredAppointments);
+        }
+
+        // Update the table with the filtered appointments
+        initialiseTable();
     }
 }

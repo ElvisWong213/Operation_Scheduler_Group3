@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -250,6 +252,13 @@ public class ShowDiaryWindow {
                 } catch (NoSuchElementException n) {
                     JOptionPane.showMessageDialog(null, "No more redo action.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
+            }
+        });
+
+        showDiaryFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                diary.saveToDatabase();
             }
         });
 

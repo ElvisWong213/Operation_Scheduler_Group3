@@ -97,7 +97,7 @@ public class HospitalScheduler {
 
 
 
-        ImagePanel imagePanel = new ImagePanel("src/gui/bcg.jpg");
+        ImagePanel imagePanel = new ImagePanel();
         // Set layout manager for the frame
         frame.setLayout(new BorderLayout());
         // Add the image panel to the center of the frame

@@ -10,6 +10,7 @@ import user.Professional;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 
 public class AuthenticationWindow {
     private JFrame authFrame;
@@ -44,7 +45,7 @@ public class AuthenticationWindow {
         //-------
 
         // Create the main panel and set its layout
-        ImagePanel mainPanel = new ImagePanel("src/gui/bcg.jpg");
+        ImagePanel mainPanel = new ImagePanel();
         mainPanel.setLayout(new BorderLayout());
         mainPanel.setBorder(BorderFactory.createEmptyBorder(18, 18, 18, 18));
 

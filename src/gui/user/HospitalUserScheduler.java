@@ -10,6 +10,7 @@ import user.UserManager;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 public class HospitalUserScheduler {
     private JFrame frame;
@@ -164,7 +165,7 @@ public class HospitalUserScheduler {
         activePatientTextArea.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
 
-        ImagePanel imagePanel = new ImagePanel("src/gui/bcg.jpg");
+        ImagePanel imagePanel = new ImagePanel();
         // Set layout manager for the frame
         frame.setLayout(new BorderLayout());
 
