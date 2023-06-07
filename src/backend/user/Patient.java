@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
+import backend.appointment.Appointment;
 import backend.type.Gender;
 import database.Database;
 
@@ -185,6 +186,7 @@ public class Patient extends User {
     @Override
     public void removeUser(int id) throws SQLException {
         getUserById(id);
+        Appointment.removeAppointmentByUserID(0, patientID);
         Database db = new Database();
         String query = String.format("DELETE FROM patient WHERE patient_id = %d;", patientID);
         db.executeUpdate(query);

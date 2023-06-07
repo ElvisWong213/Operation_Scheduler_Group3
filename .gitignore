@@ -30,3 +30,4 @@ Operation_Scheduler_Group3.iml
 ### Mac OS ###
 .DS_Store
 .idea/vcs.xml
+*.db

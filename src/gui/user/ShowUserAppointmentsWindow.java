@@ -287,7 +287,7 @@ public class ShowUserAppointmentsWindow {
                         appointmentEntry.getDate(),
                         appointmentEntry.getStartTime(),
                         appointmentEntry.getEndTime(),
-                        patientTS.getInfo(),
+                        patientTS.getName(),
                         appointmentEntry.getTreatmentType(),
                         appointmentEntry.getDescription(),
                         professionalTS.getName()

@@ -35,7 +35,7 @@ public class AuthenticationWindow {
         authFrame.setLocationRelativeTo(null);
 
         // Create labels
-        JLabel usernameLabel = new JLabel("Username:");
+        JLabel usernameLabel = new JLabel("Email:");
         JLabel passwordLabel = new JLabel("Password:");
 
         // Create text fields

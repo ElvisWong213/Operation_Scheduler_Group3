@@ -119,7 +119,7 @@ public class Appointment {
                     appointmentID);
             db.executeUpdate(query);
         } catch (SQLException e) {
-            System.out.println("Fail to book an appointment");
+            System.out.println("Fail to edit an appointment");
         }
     }
 
@@ -130,7 +130,16 @@ public class Appointment {
             String query = String.format("DELETE FROM appointment WHERE appointment_id = %d;", appointmentID);
             db.executeUpdate(query);
         } catch (SQLException e) {
-            System.out.println("Fail to book an appointment");
+            System.out.println("Fail to remove an appointment");
+        }
+    }
+    public static void removeAppointmentByUserID(int professionalID, int patientID) {
+        try {
+            Database db = new Database();
+            String query = String.format("DELETE FROM appointment WHERE (professional_id = %d OR patient_id =  %d)", professionalID, patientID);
+            db.executeUpdate(query);
+        } catch (Exception e) {
+            System.out.println("Fail to remove an appointment");
         }
     }
 

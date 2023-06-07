@@ -31,7 +31,6 @@ public class Database {
             f.printStackTrace();
         }
         File file = new File(path);
-        System.out.println(file.exists());
         if (!file.exists()) {
             createNewDatabase();
         }
@@ -57,7 +56,7 @@ public class Database {
         Statement statementInit = null;
         Connection newConnection  = null;
         try {
-            newConnection = DriverManager.getConnection("dbc:sqlite:C:\\Users\\steve\\Documents\\Work\\Operation_Scheduler_Group3\\operation_scheduler.db");
+            newConnection = DriverManager.getConnection(sqlUrl);
             String[] statements = sqlStatements.toString().split(";");
             statementInit = newConnection.createStatement();
             for (String sql : statements) {

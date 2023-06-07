@@ -3,6 +3,7 @@ package backend.user;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import backend.appointment.Appointment;
 import backend.type.Profession;
 import database.Database;
 
@@ -143,6 +144,7 @@ public class Professional extends User {
     @Override
     public void removeUser(int id) throws SQLException {
         getUserById(id);
+        Appointment.removeAppointmentByUserID(professionalID, 0);
         Database db = new Database();
         String query = String.format("DELETE FROM professional WHERE professional_id = %d;", professionalID);
         db.executeUpdate(query);

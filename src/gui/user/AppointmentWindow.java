@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Arrays;
 
 public class AppointmentWindow extends JDialog {
     private MySet<LocalTime> availableTime;
@@ -69,7 +70,7 @@ public class AppointmentWindow extends JDialog {
         LocalDate now = LocalDate.now();
         this.availableTime = new MySet<>();
         this.dayList = getDayList(now.getMonthValue(), now.getYear());
-        this.monthList = getMonthList();
+        this.monthList = getMonthList(now.getYear());
         this.yearList = getYearList(now.getYear());
 
         if (appointmentEntry == null) {
@@ -430,15 +431,27 @@ public class AppointmentWindow extends JDialog {
         if (year % 4 == 0 && month == 2) {
             maxDay += 1;
         }
-        Integer[] dayList = new Integer[maxDay];
-        for (int i = 0; i < maxDay; i++) {
-            dayList[i] = i + 1;
+
+        MyLinkedList<Integer> dayList = new MyLinkedList<>();
+        int startDay = 0;
+
+        LocalDate now = LocalDate.now();
+        if (year == now.getYear() && month == now.getMonthValue()) {
+            startDay = now.getDayOfMonth() - 1;
         }
-        return dayList;
+        for (int i = startDay; i < maxDay; i++) {
+            dayList.add(i + 1);
+        }
+        return dayList.toArray(new Integer[0]);
     }
 
-    private Integer[] getMonthList() {
+    private Integer[] getMonthList(int year) {
         Integer[] month = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+        LocalDate now = LocalDate.now();
+
+        if (year == now.getYear()) {
+            month = Arrays.copyOfRange(month, now.getMonthValue() - 1, month.length);
+        }
         return month;
     }
     
@@ -461,6 +474,9 @@ public class AppointmentWindow extends JDialog {
         if (selectedDay != null) {
             if (selectedDay > dayList.length) {
                 selectedDay = dayList.length;
+            }
+            else if (selectedDay < dayList[0]) {
+                selectedDay = dayList[0];
             }
             dayComboBoxModel.setSelectedItem(selectedDay);
         }

@@ -32,8 +32,8 @@ CREATE TABLE patient (
 );
 
 INSERT INTO user (email, password) VALUES 
-('professional@gmail.com', 'abc123'),
-('patient@gmail.com', 'def456'),
+('abc@gmail.com', '123'),
+('def@gmail.com', '456'),
 ('test1', 'abc'),
 ('test2', 'def');
 
