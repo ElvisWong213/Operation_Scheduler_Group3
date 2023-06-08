@@ -28,13 +28,41 @@ public class Diary {
     private static MyStack<Action> redoStack = new MyStack<>();
 
     private class Action {
-        private DiaryEntry data;
+        private DiaryEntry newData;
+        private DiaryEntry oldData;
         private DiaryAction diaryAction;
         
-        public Action(DiaryEntry data, DiaryAction action) {
-            this.data = data;
+        public Action(DiaryEntry newData, DiaryAction action) {
+            this.newData = newData;
             this.diaryAction = action;
         }
+
+        public Action(DiaryEntry newData, DiaryEntry oldData, DiaryAction action) {
+            this(newData, action);
+            this.oldData = oldData;
+        }
+
+        public DiaryEntry getNewData() {
+            return newData;
+        }
+
+        public DiaryEntry getOldData() {
+            return oldData;
+        }
+
+        public void setNewData(DiaryEntry newData) {
+            this.newData = newData;
+        }
+
+        public void setOldData(DiaryEntry oldData) {
+            this.oldData = oldData;
+        }
+
+        public void setDiaryAction(DiaryAction diaryAction) {
+            this.diaryAction = diaryAction;
+        }
+        
+        
     }
 
     public Diary() {
@@ -45,7 +73,9 @@ public class Diary {
     public void addEntry(DiaryEntry entry, Boolean newAction) throws DuplicateElementException {
         diaryEntries.add(entry);
         if (newAction) {
-            undoStack.push(new Action(entry, DiaryAction.Add));
+            DiaryEntry diaryEntry = new DiaryEntry();
+            diaryEntry.copyOf(entry);
+            undoStack.push(new Action(diaryEntry, DiaryAction.Add));
             clearRedo();
         }
     }
@@ -54,15 +84,21 @@ public class Diary {
         diaryEntries.remove(entry);
         deletedDiaryEntries.add(entry);
         if (newAction) {
-            undoStack.push(new Action(entry, DiaryAction.Remove));
+            DiaryEntry diaryEntry = new DiaryEntry();
+            diaryEntry.copyOf(entry);
+            undoStack.push(new Action(diaryEntry, DiaryAction.Remove));
             clearRedo();
         }
     }
 
-    public void editEntry(DiaryEntry entry, boolean newAction) {
-        diaryEntries.update(entry);
+    public void editEntry(DiaryEntry newEntry, DiaryEntry oldEntry, boolean newAction) {
+        diaryEntries.update(newEntry);
         if (newAction) {
-            undoStack.push(new Action(entry, DiaryAction.Edit));
+            DiaryEntry newDiaryEntry = new DiaryEntry();
+            newDiaryEntry.copyOf(newEntry);
+            DiaryEntry oldDiaryEntry = new DiaryEntry();
+            oldDiaryEntry.copyOf(oldEntry);
+            undoStack.push(new Action(newDiaryEntry, oldDiaryEntry, DiaryAction.Edit));
             clearRedo();
         }
     }
@@ -129,7 +165,7 @@ public class Diary {
             String query = String.format("UPDATE diary SET date = '%s', time = '%s', note = '%s' WHERE diary_id = %d;", date, time, note, id);
             db.executeUpdate(query);
         } catch (Exception e) {
-            System.out.println("Fail to remove diary");
+            System.out.println("Fail to edit diary");
         }
     }
 
@@ -170,37 +206,48 @@ public class Diary {
 
     public void undo() throws DuplicateElementException, NoSuchElementException {
         Action action = undoStack.pop();
-        DiaryAction newDiaryAction = perform(action, false);
-        redoStack.push(new Action(action.data, newDiaryAction));
+        perform(action, false);
+        redoStack.push(new Action(action.getNewData(), action.getOldData(), action.diaryAction));
     }
     
     public void redo() throws DuplicateElementException, NoSuchElementException {
         Action action = redoStack.pop();
-        DiaryAction newDiaryAction = perform(action, false);
-        undoStack.push(new Action(action.data, newDiaryAction));
+        perform(action, false);
+        undoStack.push(new Action(action.getNewData(), action.getOldData(), action.diaryAction));
     }
     
-    private DiaryAction perform(Action action, boolean newAction) throws DuplicateElementException {
-        DiaryAction newDiaryAction = null;
+    private void perform(Action action, boolean newAction) throws DuplicateElementException {
         switch (action.diaryAction) {
             case Add:
-                deleteEntry(action.data, newAction);
-                deletedDiaryEntries.add(action.data);
-                newDiaryAction = DiaryAction.Remove;
+                deleteEntry(action.getNewData(), newAction);
+                deletedDiaryEntries.add(action.getNewData());
+                action.setDiaryAction(DiaryAction.Remove);
                 break;
             case Edit:
-                editEntry(action.data, newAction);
-                newDiaryAction = DiaryAction.Edit;
+                editEntry(action.getOldData(), action.getNewData(), newAction);
+                DiaryEntry newData = new DiaryEntry();
+                DiaryEntry oldData = new DiaryEntry();
+                newData.copyOf(action.getOldData());
+                oldData.copyOf(action.getNewData());
+                action.setNewData(newData);
+                action.setOldData(oldData);
+                action.setDiaryAction(DiaryAction.Edit);
                 break;
             case Remove:
-                addEntry(action.data, newAction);
-                deletedDiaryEntries.removeByData(action.data);
-                newDiaryAction = DiaryAction.Add;
+                addEntry(action.getNewData(), newAction);
+                int index = -1;
+                for (int i = 0; i < deletedDiaryEntries.size(); i++) {
+                    if (deletedDiaryEntries.get(i).compareTo(action.getNewData()) == 0) {
+                        index = i;
+                        break;
+                    }
+                }
+                deletedDiaryEntries.remove(index);
+                action.setDiaryAction(DiaryAction.Add);
                 break;
             default:
                 break;
         }
-        return newDiaryAction;
     }
 
 

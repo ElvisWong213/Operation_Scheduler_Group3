@@ -219,8 +219,10 @@ public class AddNewDiaryWindow extends JDialog {
                                 JOptionPane.ERROR_MESSAGE);
                     }
                 } else {
+                    DiaryEntry oldDiaryEntry = new DiaryEntry();
+                    oldDiaryEntry.copyOf(diaryEntry);
                     diaryEntry.setNote(noteTextArea.getText());
-                    diary.editEntry(diaryEntry, true);
+                    diary.editEntry(diaryEntry, oldDiaryEntry, true);
                     dispose();
                 }
             }

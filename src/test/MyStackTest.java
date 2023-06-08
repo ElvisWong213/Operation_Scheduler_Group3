@@ -1,8 +1,10 @@
-package backend.dataStructure;
+package test;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+
+import backend.dataStructure.MyStack;
 
 
 public class MyStackTest {

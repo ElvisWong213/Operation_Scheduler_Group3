@@ -12,6 +12,8 @@ public class DiaryEntry implements Comparable<DiaryEntry> {
     private String note;
     private int professionalID;
     private int patientID;
+
+    public DiaryEntry() {}
     
     public DiaryEntry(int id, Date date, Time time, String note, int professional_id, int patient_id) {
         this.id = id;
@@ -111,6 +113,15 @@ public class DiaryEntry implements Comparable<DiaryEntry> {
         jsonObject.put("professional_id", professionalID);
         jsonObject.put("patient_id", patientID);
         return jsonObject;
+    }
+
+    public void copyOf(DiaryEntry newDiaryEntry) {
+        this.id = newDiaryEntry.getId();
+        this.date = newDiaryEntry.getDate();
+        this.time = newDiaryEntry.getTime();
+        this.note = newDiaryEntry.getNote();
+        this.professionalID = newDiaryEntry.getProfessionalID();
+        this.patientID = newDiaryEntry.getPatientID();
     }
     
 }
