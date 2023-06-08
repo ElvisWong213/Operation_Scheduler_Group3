@@ -161,7 +161,7 @@ public class ShowDiaryWindow {
                 FileNameExtensionFilter jsonFilter = new FileNameExtensionFilter("JSON Files", "json");
                 fileChooser.addChoosableFileFilter(jsonFilter);
                 fileChooser.setFileFilter(jsonFilter);
-                int returnValue = fileChooser.showSaveDialog(null);
+                int returnValue = fileChooser.showOpenDialog(null);
                 if (returnValue == JFileChooser.APPROVE_OPTION) {
                     try {
                         diary.readFile(fileChooser.getSelectedFile().toString());
