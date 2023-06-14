@@ -4,9 +4,17 @@ This project aims to create a scheduler of operations in the hospital, which wil
 
 ## Features
 
-- making and managing records for health professionals
-- keeping electronic diaries for each professional
-- finding, and scheduling patient visits, and offering the ability to undo them.
+- Making and managing records for health professionals.
+- Keeping electronic diaries for each professional.
+- Finding, and scheduling patient visits, and offering the ability to undo them.
+
+## Usage
+Require JDK version 17 or higher.  
+Run the following command or the Main method in gui folder.
+```
+java -jar Operation_Scheduler_Group3.jar
+```
+
 
 ## Screenshots
 <p align ="center">
